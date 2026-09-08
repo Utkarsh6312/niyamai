@@ -19,7 +19,7 @@ export default function PolicyLibrary() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Policy Library</h1>
+          <h1 className="font-serif text-3xl font-bold tracking-tight">Policy Library</h1>
           <p className="text-muted-foreground mt-1 text-base">Browse, search and manage regulatory documents, internal policies and guidance.</p>
         </div>
         <button className="flex items-center gap-2 px-4 py-2 bg-indigo text-white rounded-md font-medium text-sm hover:bg-indigo/90 transition-colors shadow-sm">
@@ -156,7 +156,7 @@ export default function PolicyLibrary() {
                     <button onClick={() => setSelectedDocId("")} className="w-6 h-6 flex items-center justify-center hover:text-foreground"><X className="w-4 h-4" /></button>
                  </div>
               </div>
-              <h2 className="font-bold text-xl leading-tight mb-1">RBI Master Direction — KYC (2026)</h2>
+              <h2 className="font-serif font-bold text-xl leading-tight mb-1">RBI Master Direction — KYC (2026)</h2>
               <p className="text-sm text-muted-foreground">RBI/2026-27/45</p>
               
               <p className="text-sm text-foreground mt-4 leading-relaxed">

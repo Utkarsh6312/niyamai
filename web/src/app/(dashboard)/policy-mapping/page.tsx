@@ -50,7 +50,7 @@ export default function PolicyMapping() {
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Policy Impact Mapping</h1>
+          <h1 className="font-serif text-3xl font-bold tracking-tight text-foreground">Policy Impact Mapping</h1>
           <p className="text-muted-foreground text-[15px] mt-1">Trace regulatory obligations to the exact internal policies they affect.</p>
         </div>
         <div className="flex items-center gap-3">
@@ -71,7 +71,7 @@ export default function PolicyMapping() {
           <div className="mb-3">
              <div className="text-[11px] font-bold text-muted-foreground tracking-widest uppercase mb-1">RBI REGULATION</div>
              <div className="flex items-center gap-2 mb-2">
-                <h2 className="text-lg font-bold text-foreground">RBI Master Direction — KYC (2026)</h2>
+                <h2 className="font-serif text-lg font-bold text-foreground">RBI Master Direction — KYC (2026)</h2>
                 <span className="bg-destructive/10 text-destructive border border-destructive/20 text-[10px] font-semibold px-2 py-0.5 rounded">Regulatory Source</span>
              </div>
              <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -177,7 +177,7 @@ export default function PolicyMapping() {
           <div className="mb-3">
              <div className="text-[11px] font-bold text-muted-foreground tracking-widest uppercase mb-1">AAROHAN BANK POLICY</div>
              <div className="flex items-center gap-2 mb-2">
-                <h2 className="text-lg font-bold text-foreground">KYC Policy v3.4</h2>
+                <h2 className="font-serif text-lg font-bold text-foreground">KYC Policy v3.4</h2>
                 <span className="bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 text-[10px] font-semibold px-2 py-0.5 rounded">Internal Policy</span>
              </div>
              <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -227,7 +227,7 @@ export default function PolicyMapping() {
 
       {/* Mapping Analysis */}
       <div>
-         <h2 className="text-lg font-bold text-foreground mb-4">Mapping Analysis</h2>
+         <h2 className="font-serif text-lg font-bold text-foreground mb-4">Mapping Analysis</h2>
          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Box 1 */}
             <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  p-5 ">

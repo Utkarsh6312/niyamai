@@ -59,7 +59,7 @@ export default function RegulatoryFeed() {
 
          <div className="flex items-start justify-between">
            <div>
-             <h1 className="text-3xl font-bold tracking-tight">Regulatory Intelligence Feed</h1>
+             <h1 className="font-serif text-3xl font-bold tracking-tight">Regulatory Intelligence Feed</h1>
              <p className="text-muted-foreground mt-1 text-base">Stay updated with the latest regulatory developments from trusted sources.</p>
            </div>
            <div className="flex items-center gap-3">
@@ -212,7 +212,7 @@ export default function RegulatoryFeed() {
               <div className="flex gap-3 items-start mb-4 pr-6">
                  <div className="p-2 rounded bg-indigo/10 text-indigo shrink-0 mt-1"><FileText className="w-5 h-5" /></div>
                  <div>
-                    <h2 className="font-bold text-lg leading-tight mb-1">{selectedEvent.title}</h2>
+                    <h2 className="font-serif font-bold text-lg leading-tight mb-1">{selectedEvent.title}</h2>
                     <p className="text-sm text-muted-foreground">{selectedEvent.sourceName}</p>
                  </div>
               </div>

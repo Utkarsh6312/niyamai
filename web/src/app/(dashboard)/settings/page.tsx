@@ -35,7 +35,7 @@ export default function Settings() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Settings</h1>
+          <h1 className="font-serif text-3xl font-bold tracking-tight mb-2">Settings</h1>
           <p className="text-muted-foreground text-sm">Configure your workspace, preferences, and system settings.</p>
         </div>
         <button className="flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors shadow-sm">
@@ -69,7 +69,7 @@ export default function Settings() {
         {/* Center Content */}
         <div className="flex-1 space-y-6">
           <div className="bg-white border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-6">
-            <h2 className="text-xl font-bold text-[#0F172A] mb-1">General Settings</h2>
+            <h2 className="font-serif text-xl font-bold text-[#0F172A] mb-1">General Settings</h2>
             <p className="text-sm text-slate-500 mb-6">Manage your organization's basic information and preferences.</p>
 
             <h3 className="text-sm font-bold text-[#0F172A] mb-4">Organization Information</h3>

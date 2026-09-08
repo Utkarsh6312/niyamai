@@ -133,7 +133,7 @@ export default function AuditTrail() {
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-primary-dark">Audit Trail</h1>
+          <h1 className="font-serif text-3xl font-bold tracking-tight text-primary-dark">Audit Trail</h1>
           <p className="text-muted-foreground mt-2 text-base">Complete traceability of regulatory intelligence, analysis and actions.</p>
         </div>
         <div className="flex items-center gap-3">
@@ -194,7 +194,7 @@ export default function AuditTrail() {
         
         {/* Left Sidebar Filters */}
         <div className="w-full lg:w-64 shrink-0 flex flex-col space-y-6">
-          <h2 className="text-lg font-bold text-primary-dark">Filter Events</h2>
+          <h2 className="font-serif text-lg font-bold text-primary-dark">Filter Events</h2>
           
           <div className="space-y-4">
             <div className="space-y-2">
@@ -283,7 +283,7 @@ export default function AuditTrail() {
         {/* Middle Main Section */}
         <div className="flex-1 bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]   flex flex-col min-h-0 overflow-hidden">
           <div className="p-4 border-b border-border flex items-center justify-between bg-card shrink-0">
-            <h2 className="text-lg font-bold text-primary-dark">Audit Log <span className="text-muted-foreground font-medium text-base">(1,284 events)</span></h2>
+            <h2 className="font-serif text-lg font-bold text-primary-dark">Audit Log <span className="text-muted-foreground font-medium text-base">(1,284 events)</span></h2>
             <div className="flex items-center gap-2 bg-secondary border border-border rounded-md px-3 py-1.5 text-sm font-medium cursor-pointer">
               <RotateCcw className="w-3.5 h-3.5 text-muted-foreground" />
               <span>Newest First</span>
@@ -358,7 +358,7 @@ export default function AuditTrail() {
         {detailsOpen && (
           <div className="w-full lg:w-[380px] shrink-0 bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]   flex flex-col min-h-0">
             <div className="p-5 border-b border-border flex items-center justify-between shrink-0">
-              <h2 className="text-lg font-bold text-primary-dark">Event Details</h2>
+              <h2 className="font-serif text-lg font-bold text-primary-dark">Event Details</h2>
               <button onClick={() => setDetailsOpen(false)} className="text-muted-foreground hover:text-primary-dark">
                 <X className="w-5 h-5" />
               </button>

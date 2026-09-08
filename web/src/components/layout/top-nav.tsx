@@ -137,7 +137,9 @@ export function TopNav() {
                <DropdownMenuItem className="cursor-pointer"><SettingsIcon className="mr-2 w-4 h-4" /> Settings</DropdownMenuItem>
             </Link>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer text-red focus:text-red"><LogOut className="mr-2 w-4 h-4" /> Sign Out</DropdownMenuItem>
+            <Link href="/login">
+               <DropdownMenuItem className="cursor-pointer text-red focus:text-red"><LogOut className="mr-2 w-4 h-4" /> Sign Out</DropdownMenuItem>
+            </Link>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

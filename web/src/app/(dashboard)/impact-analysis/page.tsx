@@ -90,7 +90,7 @@ export default function ImpactAnalysis() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Impact Analysis</h1>
+          <h1 className="font-serif text-3xl font-bold tracking-tight">Impact Analysis</h1>
           <p className="text-muted-foreground mt-1 text-base">Understand the impact of new and existing regulations on your organization.</p>
         </div>
         <div className="flex items-center gap-3">
@@ -132,7 +132,7 @@ export default function ImpactAnalysis() {
             <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  p-6  flex flex-col opacity-100 transition-opacity">
               <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h3 className="font-bold text-lg">Impact Overview</h3>
+                  <h3 className="font-serif font-bold text-lg">Impact Overview</h3>
                   <p className="text-xs text-muted-foreground mt-1">Distribution of regulatory impacts across your organization</p>
                 </div>
                 <select className="bg-transparent border border-border rounded px-2 py-1 text-sm outline-none">
@@ -193,7 +193,7 @@ export default function ImpactAnalysis() {
             {/* Departments Affected (Bar) */}
             <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  p-6  flex flex-col">
               <div className="mb-6">
-                <h3 className="font-bold text-lg">Departments Affected</h3>
+                <h3 className="font-serif font-bold text-lg">Departments Affected</h3>
                 <p className="text-xs text-muted-foreground mt-1">Number of obligations by department</p>
               </div>
               {analyzed ? (
@@ -321,7 +321,7 @@ export default function ImpactAnalysis() {
           {/* Recent Analysis */}
           <div>
             <div className="flex justify-between items-center mb-3">
-              <h3 className="font-bold">Recent Analysis</h3>
+              <h3 className="font-serif font-bold">Recent Analysis</h3>
               <button className="text-indigo text-xs font-semibold hover:underline">View All</button>
             </div>
             <div className="space-y-2">
@@ -350,7 +350,7 @@ export default function ImpactAnalysis() {
           {analyzed && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                <div className="flex justify-between items-center mb-3">
-                 <h3 className="font-bold">Key Insights</h3>
+                 <h3 className="font-serif font-bold">Key Insights</h3>
                  <button className="flex items-center gap-1 text-indigo border border-border bg-card px-2 py-1 rounded text-xs font-semibold shadow-sm hover:bg-secondary">
                    <ArrowUpRight className="w-3 h-3" /> Generate Report
                  </button>
@@ -380,7 +380,7 @@ export default function ImpactAnalysis() {
           {analyzed && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                <div className="flex justify-between items-center mb-3">
-                 <h3 className="font-bold">Recommended Actions</h3>
+                 <h3 className="font-serif font-bold">Recommended Actions</h3>
                  <button className="text-indigo text-xs font-semibold hover:underline">View All</button>
                </div>
                <div className="space-y-4 bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  p-4 ">

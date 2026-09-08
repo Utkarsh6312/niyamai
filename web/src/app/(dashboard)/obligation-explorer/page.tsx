@@ -32,7 +32,7 @@ export default function ObligationExplorer() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Obligations Explorer</h1>
+          <h1 className="font-serif text-3xl font-bold tracking-tight mb-2">Obligations Explorer</h1>
           <p className="text-slate-500 text-sm">Explore, search, and analyze your regulatory obligations across all applicable regulations.</p>
         </div>
         <div className="flex items-center gap-3">

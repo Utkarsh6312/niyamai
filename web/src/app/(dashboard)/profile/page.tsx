@@ -13,7 +13,7 @@ export default function Profile() {
 
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">My Profile</h1>
+          <h1 className="font-serif text-3xl font-bold tracking-tight">My Profile</h1>
           <p className="text-muted-foreground mt-1 text-base">View and manage your personal information, role, and preferences.</p>
         </div>
         <button className="flex items-center gap-2 px-4 py-2 bg-indigo text-white rounded-md font-medium text-sm hover:bg-indigo/90 transition-colors shadow-sm">
@@ -27,7 +27,7 @@ export default function Profile() {
             <div className="w-24 h-24 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-3xl font-bold">AS</div>
             <div className="absolute bottom-0 right-0 p-1.5 bg-indigo text-white rounded-full border-2 border-card cursor-pointer"><Camera className="w-3 h-3" /></div>
           </div>
-          <h2 className="text-xl font-bold text-center">Aarav Sharma</h2>
+          <h2 className="font-serif text-xl font-bold text-center">Aarav Sharma</h2>
           <p className="text-indigo font-medium text-sm mt-1">Compliance Admin</p>
           <div className="flex flex-col gap-1 mt-3 w-full text-xs text-muted-foreground">
              <div className="flex items-center gap-2"><BuildingIcon className="w-3.5 h-3.5" /> Aarohan Bank</div>

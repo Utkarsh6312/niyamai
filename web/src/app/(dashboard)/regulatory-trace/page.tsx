@@ -18,7 +18,7 @@ export default function RegulatoryTrace() {
 
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Regulatory Trace</h1>
+          <h1 className="font-serif text-3xl font-bold tracking-tight">Regulatory Trace</h1>
           <p className="text-muted-foreground mt-1 text-base">End-to-end provenance mapping from regulation to compliance action.</p>
         </div>
         <div className="flex gap-3">

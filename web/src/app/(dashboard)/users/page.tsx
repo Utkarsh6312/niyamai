@@ -43,7 +43,7 @@ export default function Users() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight mb-2">Users &amp; Roles</h1>
+          <h1 className="font-serif text-4xl font-bold tracking-tight mb-2">Users &amp; Roles</h1>
           <p className="text-muted-foreground text-sm">Manage user access, roles, and permissions for your organization.</p>
         </div>
         <div className="flex items-center gap-3">

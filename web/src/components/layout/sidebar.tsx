@@ -111,7 +111,7 @@ export function Sidebar({ className }: { className?: string }) {
          </Link>
 
          {/* User */}
-         <div className="flex items-center gap-3 px-3 py-3 rounded-lg bg-[#0E1A2C] hover:bg-[#132238] cursor-pointer transition-colors border border-white/5 shadow-sm">
+         <Link href="/profile" className="flex items-center gap-3 px-3 py-3 rounded-lg bg-[#0E1A2C] hover:bg-[#132238] cursor-pointer transition-colors border border-white/5 shadow-sm">
             <div className="w-10 h-10 rounded-full bg-[#E8EDF5] text-[#08111F] flex items-center justify-center font-bold text-sm shrink-0">
                AS
             </div>
@@ -120,7 +120,7 @@ export function Sidebar({ className }: { className?: string }) {
                <p className="text-[11px] text-[#8B9DB4] truncate mt-0.5 font-medium">Compliance Admin</p>
             </div>
             <ChevronRight className="w-4 h-4 text-white/50 shrink-0" />
-         </div>
+         </Link>
       </div>
     </aside>
   );

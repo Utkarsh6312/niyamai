@@ -82,7 +82,7 @@ export default function RiskHeatmap() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight mb-2">Risk &amp; Impact Center</h1>
+          <h1 className="font-serif text-4xl font-bold tracking-tight mb-2">Risk &amp; Impact Center</h1>
           <p className="text-muted-foreground text-sm">Understand organizational exposure and prioritize compliance actions.</p>
         </div>
         <div className="flex items-center gap-3">
@@ -171,7 +171,7 @@ export default function RiskHeatmap() {
           <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  ">
             <div className="p-5 border-b border-border flex justify-between items-center">
               <div>
-                <h2 className="text-lg font-bold">Organizational Risk Map</h2>
+                <h2 className="font-serif text-lg font-bold">Organizational Risk Map</h2>
                 <p className="text-sm text-muted-foreground mt-0.5">Department-wise regulatory impact and risk exposure.</p>
               </div>
               <div className="flex items-center gap-5 text-xs">
@@ -247,7 +247,7 @@ export default function RiskHeatmap() {
           {/* Risk Heatmap (scatter) */}
           <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  ">
             <div className="p-5 border-b border-border">
-              <h2 className="text-lg font-bold">Risk Heatmap</h2>
+              <h2 className="font-serif text-lg font-bold">Risk Heatmap</h2>
               <p className="text-sm text-muted-foreground mt-0.5">Regulatory risk distribution by likelihood and impact.</p>
             </div>
             <div className="flex">
@@ -322,7 +322,7 @@ export default function RiskHeatmap() {
           {/* Top Regulatory Risks */}
           <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  ">
             <div className="p-5 border-b border-border flex justify-between items-center">
-              <h2 className="text-lg font-bold">Top Regulatory Risks</h2>
+              <h2 className="font-serif text-lg font-bold">Top Regulatory Risks</h2>
               <Link href="/regulatory-feed" className="text-blue-400 text-sm hover:underline flex items-center gap-1">
                 View All <span>→</span>
               </Link>
@@ -358,7 +358,7 @@ export default function RiskHeatmap() {
           {/* Department Impact */}
           <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  ">
             <div className="p-5 border-b border-border flex justify-between items-center">
-              <h2 className="text-lg font-bold">Department Impact</h2>
+              <h2 className="font-serif text-lg font-bold">Department Impact</h2>
               <div className="flex items-center gap-2 text-xs">
                 <span className="bg-indigo/10 text-indigo border border-indigo/30 px-2.5 py-1 rounded font-medium">Policies Impacted</span>
                 <span className="text-muted-foreground px-2.5 py-1 cursor-pointer hover:text-foreground transition-colors">Open Actions</span>
@@ -383,7 +383,7 @@ export default function RiskHeatmap() {
           {/* Recent Risk Trends */}
           <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  ">
             <div className="p-5 border-b border-border flex justify-between items-center">
-              <h2 className="text-lg font-bold">Recent Risk Trends</h2>
+              <h2 className="font-serif text-lg font-bold">Recent Risk Trends</h2>
               <select defaultValue="Last 6 months" className="bg-transparent border border-border px-2 py-1 rounded outline-none text-xs">
                 <option>Last 3 months</option>
                 <option>Last 6 months</option>

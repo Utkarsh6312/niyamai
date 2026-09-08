@@ -114,7 +114,7 @@ export default function WorkspacesPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-primary-dark">Enterprise Workspace</h1>
+            <h1 className="font-serif text-3xl font-bold tracking-tight text-primary-dark">Enterprise Workspace</h1>
             <p className="text-muted-foreground mt-1">Select and manage your organization's regulatory workspace.</p>
           </div>
           <button className="flex items-center gap-2 bg-indigo text-white px-4 py-2 rounded-md font-semibold text-sm hover:bg-indigo/90 transition-colors shadow-sm whitespace-nowrap">
@@ -144,7 +144,7 @@ export default function WorkspacesPage() {
 
           <div className="relative z-20 max-w-xl">
             <p className="text-xs font-semibold tracking-[0.2em] text-white/70 mb-3 uppercase">Welcome to Niyamai</p>
-            <h2 className="text-3xl sm:text-4xl font-bold leading-tight mb-4">
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold leading-tight mb-4">
               Turn Regulatory Change<br />
               into <span className="text-teal-400">Confident Action</span>
             </h2>

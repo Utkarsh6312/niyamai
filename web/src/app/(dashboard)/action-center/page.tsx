@@ -42,7 +42,7 @@ export default function ActionCenter() {
 
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Compliance Action Center</h1>
+            <h1 className="font-serif text-3xl font-bold tracking-tight">Compliance Action Center</h1>
             <p className="text-muted-foreground mt-1 text-base">Convert regulatory findings into accountable implementation tasks.</p>
           </div>
           <div className="flex items-center gap-3">
@@ -186,7 +186,7 @@ export default function ActionCenter() {
           <div className="fixed top-0 right-0 z-50 h-full w-[420px] bg-card border-l border-border shadow-xl flex flex-col">
             {/* Header */}
             <div className="px-6 py-4 flex items-center justify-between border-b border-border shrink-0">
-              <h2 className="text-lg font-bold">Action Details</h2>
+              <h2 className="font-serif text-lg font-bold">Action Details</h2>
               <button onClick={closePanel} className="p-1 rounded hover:bg-secondary transition-colors">
                 <X className="w-5 h-5 text-muted-foreground" />
               </button>

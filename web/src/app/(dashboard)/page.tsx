@@ -54,7 +54,7 @@ export default function Home() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">AAROHAN BANK</p>
-          <h1 className="text-4xl font-bold tracking-tight mb-2">Regulatory Overview</h1>
+          <h1 className="font-serif text-4xl font-bold tracking-tight mb-2">Regulatory Overview</h1>
           <p className="text-muted-foreground text-sm">Monitor regulatory changes, policy impact and compliance actions across Aarohan Bank.</p>
         </div>
         <div className="flex items-center gap-3">
@@ -106,7 +106,7 @@ export default function Home() {
           {/* Trend Chart */}
           <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  ">
             <div className="p-5 border-b border-border flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
-              <h2 className="text-lg font-bold">Regulatory Impact Trend</h2>
+              <h2 className="font-serif text-lg font-bold">Regulatory Impact Trend</h2>
               <div className="flex flex-wrap items-center gap-4 xl:gap-6 text-sm">
                 <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-blue-500" /> Regulatory changes</div>
                 <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-teal-400" /> Policies impacted</div>
@@ -141,7 +141,7 @@ export default function Home() {
           {/* Recent Changes Table */}
           <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  ">
             <div className="p-5 border-b border-border flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
-              <h2 className="text-lg font-bold">Recent Regulatory Changes</h2>
+              <h2 className="font-serif text-lg font-bold">Recent Regulatory Changes</h2>
               <Link href="/regulatory-feed" className="text-blue-400 text-sm hover:underline flex items-center">
                 View All <span className="ml-1">→</span>
               </Link>
@@ -187,7 +187,7 @@ export default function Home() {
           {/* Risk Distribution */}
           <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  ">
             <div className="p-5 border-b border-border">
-              <h2 className="text-lg font-bold">Risk Distribution</h2>
+              <h2 className="font-serif text-lg font-bold">Risk Distribution</h2>
             </div>
             <div className="p-5 flex items-center">
               <div className="w-[160px] h-[160px] relative">
@@ -234,7 +234,7 @@ export default function Home() {
           {/* Department Impact */}
           <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  ">
             <div className="p-5 border-b border-border flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
-              <h2 className="text-lg font-bold">Department Impact</h2>
+              <h2 className="font-serif text-lg font-bold">Department Impact</h2>
               <div className="flex items-center gap-4 text-xs">
                 <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500" /> Impacted Policies</div>
                 <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-teal-400" /> Open Actions</div>
