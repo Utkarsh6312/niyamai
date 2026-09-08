@@ -64,3 +64,5 @@ To run the Python AI services or backend API:
 - **Frontend:** Next.js, React, Tailwind CSS, shadcn/ui
 - **Visuals:** Recharts, Framer Motion
 - **Backend/AI:** Python (FastAPI, LLM APIs) *[Backend integration in progress]*
+
+
