@@ -1,6 +1,8 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme inline {
+:root {
   --color-background: #F5F7FA;
   --color-foreground: #111827;
   --color-card: #FFFFFF;
@@ -23,10 +25,6 @@
   --color-amber: #D99A28;
   --color-red: #D84A4A;
   --color-analytical: #F5F7FA;
-
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
-  --font-serif: var(--font-playfair), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 }
 
 @layer base {
@@ -36,7 +34,7 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: var(--font-sans);
+    font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
   }
 }
 
