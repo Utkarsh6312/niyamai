@@ -115,7 +115,7 @@ export default function ImpactAnalysis() {
           if (job.current_stage) {
             setAnalysisStep(stageMap[job.current_stage] || 1);
           }
-          if (job.status === "completed") {
+          if (job.status === "Completed") {
             clearInterval(poll);
             setAnalysisStep(6);
             setTimeout(() => {
@@ -123,7 +123,7 @@ export default function ImpactAnalysis() {
               loadData(); // Refresh data
               toast.success("Analysis complete", { description: "Regulation fully mapped." });
             }, 1000);
-          } else if (job.status === "failed") {
+          } else if (job.status === "Failed") {
             clearInterval(poll);
             setAnalyzing(false);
             toast.error("Pipeline failed", { description: job.error_message || "Unknown error" });
