@@ -133,6 +133,85 @@ export default function AIAssistant() {
             </div>
           </div>
         );
+      } else if (lowerInput.includes("impacts") || lowerInput.includes("bank")) {
+        responseContent = (
+          <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-sm p-4 text-[13px] text-slate-700 leading-relaxed shadow-sm w-full">
+            <h4 className="font-bold text-sm text-slate-800 mb-3 flex items-center gap-2">
+              <BarChart2 className="w-4 h-4 text-indigo-600" /> Aarohan Bank Impact Summary
+            </h4>
+            <p className="mb-4">
+              The RBI KYC Amendment fundamentally alters our digital acquisition funnel. We project the following operational impacts:
+            </p>
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="bg-red-50/50 border border-red-100 rounded-lg p-3">
+                <div className="text-red-600 font-bold text-lg mb-1">-14%</div>
+                <div className="text-slate-600 text-xs">Projected drop in digital onboarding completion rate in Q4 due to active liveness friction.</div>
+              </div>
+              <div className="bg-orange-50/50 border border-orange-100 rounded-lg p-3">
+                <div className="text-orange-600 font-bold text-lg mb-1">₹4.2M</div>
+                <div className="text-slate-600 text-xs">Estimated tech debt to integrate Sovereign Cloud Geofencing & new Biometric APIs.</div>
+              </div>
+            </div>
+            <p className="text-xs text-slate-500 bg-slate-50 p-2 rounded">
+              <strong>Recommendation:</strong> A/B test liveness SDKs immediately to minimize funnel drop-off while meeting regulatory standards.
+            </p>
+          </div>
+        );
+      } else if (lowerInput.includes("department") || lowerInput.includes("affected")) {
+        responseContent = (
+          <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-sm p-4 text-[13px] text-slate-700 leading-relaxed shadow-sm w-full">
+            <h4 className="font-bold text-sm text-slate-800 mb-3 flex items-center gap-2">
+              <Users className="w-4 h-4 text-blue-600" /> Affected Departments
+            </h4>
+            <div className="space-y-3">
+              <div className="border border-slate-100 rounded-lg p-3 shadow-sm">
+                <h5 className="font-semibold text-slate-800">1. Digital Banking & IT</h5>
+                <p className="text-slate-600 mt-1">Must overhaul the V-CIP application. Integration of real-time geofencing and active biometric challenge-response SDKs is required.</p>
+              </div>
+              <div className="border border-slate-100 rounded-lg p-3 shadow-sm">
+                <h5 className="font-semibold text-slate-800">2. Compliance & Legal</h5>
+                <p className="text-slate-600 mt-1">Requires rewriting KYC Policy v3.4 and updating customer consent terms to reflect new biometric retention limitations.</p>
+              </div>
+              <div className="border border-slate-100 rounded-lg p-3 shadow-sm">
+                <h5 className="font-semibold text-slate-800">3. Risk Management</h5>
+                <p className="text-slate-600 mt-1">Need to recalculate internal risk scoring matrices to account for the new "source of wealth" verification tiers.</p>
+              </div>
+            </div>
+          </div>
+        );
+      } else if (lowerInput.includes("action items") || lowerInput.includes("timeline")) {
+        responseContent = (
+          <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-sm p-4 text-[13px] text-slate-700 leading-relaxed shadow-sm w-full">
+            <h4 className="font-bold text-sm text-slate-800 mb-3 flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-emerald-600" /> Recommended Action Plan
+            </h4>
+            <div className="relative border-l-2 border-slate-200 ml-3 pl-4 space-y-4 py-2">
+              <div className="relative">
+                <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></div>
+                <h5 className="font-semibold text-slate-800">Immediate (Next 14 Days)</h5>
+                <p className="text-slate-600 mt-0.5">Form steering committee. Draft initial amendments to KYC Policy v3.4.</p>
+              </div>
+              <div className="relative">
+                <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 bg-orange-500 rounded-full border-2 border-white"></div>
+                <h5 className="font-semibold text-slate-800">Within 30 Days</h5>
+                <p className="text-slate-600 mt-0.5">Select vendor for Active Biometric Liveness SDK. Begin sandbox integration.</p>
+              </div>
+              <div className="relative">
+                <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 bg-blue-500 rounded-full border-2 border-white"></div>
+                <h5 className="font-semibold text-slate-800">Within 60 Days</h5>
+                <p className="text-slate-600 mt-0.5">Deploy geofencing IP verification to production. Train customer support staff on new onboarding friction.</p>
+              </div>
+              <div className="relative">
+                <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white"></div>
+                <h5 className="font-semibold text-slate-800">Oct 1, 2026 (Deadline)</h5>
+                <p className="text-slate-600 mt-0.5">Full compliance achieved. Central KYC Registry reporting shifted to 3-day SLA.</p>
+              </div>
+            </div>
+            <button className="w-full mt-4 flex justify-center items-center gap-1.5 bg-slate-900 text-white px-3 py-2 rounded-md font-medium hover:bg-slate-800 transition-colors shadow-sm">
+              <Plus className="w-4 h-4" /> Add to Action Center
+            </button>
+          </div>
+        );
       } else {
         responseContent = (
           <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-sm p-3.5 text-[13px] text-slate-700 leading-relaxed shadow-sm">
