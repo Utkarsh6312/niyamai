@@ -1,4 +1,3 @@
-import "../globals.css";
 import { Sidebar } from "@/components/layout/sidebar";
 import { TopNav } from "@/components/layout/top-nav";
 

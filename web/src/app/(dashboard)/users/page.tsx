@@ -4,6 +4,7 @@ import { Plus, UserPlus, ShieldPlus, MoreVertical, Search, Filter, ChevronRight,
 import Link from "next/link";
 import { useState } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { toast } from "sonner";
 
 // --- Mock Data ---
 const users = [
@@ -47,10 +48,10 @@ export default function Users() {
           <p className="text-muted-foreground text-sm">Manage user access, roles, and permissions for your organization.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 border border-indigo text-indigo px-4 py-2 rounded text-sm font-medium hover:bg-indigo/5 transition-colors">
+          <button onClick={() => toast.success("Invitation link generated!")} className="flex items-center gap-2 border border-indigo text-indigo px-4 py-2 rounded text-sm font-medium hover:bg-indigo/5 transition-colors">
             <UserPlus className="w-4 h-4" /> Invite User
           </button>
-          <button className="flex items-center gap-2 bg-indigo hover:bg-indigo/90 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
+          <button onClick={() => toast.info("Opening role builder...")} className="flex items-center gap-2 bg-indigo hover:bg-indigo/90 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
             <ShieldPlus className="w-4 h-4" /> Create Role
           </button>
         </div>

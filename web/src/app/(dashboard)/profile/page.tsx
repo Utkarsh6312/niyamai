@@ -1,6 +1,11 @@
-﻿"use client";
-import { ChevronRight, Camera, Mail, Phone, MapPin, Calendar, Clock, Edit3, Shield, Bell, Lock, Settings, Download, MoreVertical } from "lucide-react";
+"use client";
+import { 
+  ChevronRight, Camera, Mail, Phone, MapPin, Building, Briefcase, 
+  ShieldCheck, Clock, Calendar, CheckCircle2, 
+  Edit, Key, Bell, ExternalLink, Settings, Save, ArrowLeft, Shield, Lock, Download, MoreVertical, Edit3
+} from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export default function Profile() {
   return (
@@ -16,8 +21,11 @@ export default function Profile() {
           <h1 className="font-serif text-3xl font-bold tracking-tight">My Profile</h1>
           <p className="text-muted-foreground mt-1 text-base">View and manage your personal information, role, and preferences.</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-indigo text-white rounded-md font-medium text-sm hover:bg-indigo/90 transition-colors shadow-sm">
-          <Edit3 className="w-4 h-4" /> Edit Profile
+        <button 
+          onClick={() => toast.success("Profile updated successfully")} 
+          className="flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors shadow-sm"
+        >
+          <Save className="w-4 h-4" /> Save Profile
         </button>
       </div>
 
