@@ -2,16 +2,41 @@
 import { ChevronRight, Search, MoreVertical, CheckCircle2, AlertTriangle, Clock, FileText, RefreshCcw, PieChart, Plus, Columns, X } from "lucide-react";
 import Link from "next/link";
 import { RiskBadge, StatusBadge } from "@/components/ui/badges";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { complianceActions } from "@/lib/data/mock-data";
 import { cn } from "@/lib/utils";
 
-type Action = typeof complianceActions[0];
+// Define action type without mock-data dependency
+type Action = {
+  id: string;
+  action: string;
+  regulation: string;
+  department: string;
+  ownerInitials: string;
+  owner: string;
+  priority: string;
+  due: string;
+  status: string;
+};
 
 export default function ActionCenter() {
   const [selectedAction, setSelectedAction] = useState<Action | null>(null);
-  const [actions, setActions] = useState(complianceActions);
+  const [actions, setActions] = useState<Action[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/actions')
+      .then(res => res.json())
+      .then(data => {
+        setActions(data);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        toast.error("Failed to load actions from database");
+        setIsLoading(false);
+      });
+  }, []);
 
   const openActionDetail = (row: Action) => {
     setSelectedAction(row);
@@ -21,13 +46,27 @@ export default function ActionCenter() {
     setSelectedAction(null);
   };
 
-  const handleMarkComplete = () => {
+  const handleMarkComplete = async () => {
     if (!selectedAction) return;
+    
+    // Optimistic UI update
     setActions(prev => prev.map(a => a.id === selectedAction.id ? { ...a, status: "Completed" } : a));
     setSelectedAction({ ...selectedAction, status: "Completed" });
-    toast.success(`Action ${selectedAction.id} marked complete`, {
-      description: "Audit trail updated with completion timestamp."
-    });
+    
+    try {
+      await fetch('/api/actions', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: selectedAction.id, status: 'Completed' })
+      });
+      
+      toast.success(`Action ${selectedAction.id} marked complete`, {
+        description: "Audit trail updated with completion timestamp."
+      });
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update status in database");
+    }
   };
 
   return (

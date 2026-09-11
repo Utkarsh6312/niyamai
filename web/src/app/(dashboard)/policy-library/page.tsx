@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   ChevronRight,
@@ -22,12 +22,76 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { StatusBadge, RiskBadge } from "@/components/ui/badges";
-import { documentsData, PolicyDocument, demoRbiGuideline } from "@/lib/data/mock-data";
 import { toast } from "sonner";
 
+export interface PolicyDocument {
+  id: string;
+  code: string;
+  title: string;
+  sub: string;
+  type: "Regulation" | "Internal Policy" | "Guidance" | "Circular";
+  source: "RBI" | "Aarohan Bank" | "SEBI" | "FIU-IND";
+  department: string;
+  date: string;
+  effectiveDate: string;
+  status: "Active" | "Under Review" | "Pending Action" | "Superseded";
+  rel: "Critical" | "High" | "Medium" | "Low";
+  iconColor: string;
+  iconBg: string;
+  pages: number;
+  lastUpdated: string;
+  owner: string;
+  description: string;
+  topics: string[];
+  clausesCount: number;
+  obligationsCount: number;
+  mappingCount: number;
+  aiSummary: string;
+  clauses: {
+    number: string;
+    title: string;
+    text: string;
+    obligationType: "Mandatory" | "Recommendatory";
+    matchedSection?: string;
+    gapScore?: number;
+  }[];
+}
+
+const demoRbiGuideline = {
+  id: "DOC-NEW",
+  code: "RBI/2026-27/114",
+  title: "RBI Circular: Digital Lending Due Diligence & Biometric Verification Trigger (2026)",
+  issuer: "Reserve Bank of India",
+  date: "18 Aug 2026",
+  effectiveDate: "01 Oct 2026",
+  status: "Under Analysis",
+  impact: "Critical",
+  fileSize: "2.4 MB (PDF)",
+  reference: "RBI/2026-27/114 - DoR.FIN.REC.No.42/03.10.136/2026-27",
+  summary: "Amendments to KYC Master Direction & Digital Lending Framework. Mandates active biometric liveness detection and geolocation checks for unassisted digital onboarding.",
+  detectedGap: "Aarohan Bank KYC Policy v3.4 §3.2 currently relies on standard OTP/e-KYC and does not mandate active 6-month biometric liveness checks for unassisted digital loan applicants.",
+  remediationAction: "ACT-2041: Upgrade Digital KYC pipeline to integrate real-time liveness SDK and amend Section 3.2 of KYC SOP.",
+  impactedDepartments: ["Compliance", "Digital Banking", "Information Technology", "Risk Management"]
+};
+
 export default function PolicyLibrary() {
-  const [docs, setDocs] = useState<PolicyDocument[]>(documentsData);
+  const [docs, setDocs] = useState<PolicyDocument[]>([]);
   const [selectedDocId, setSelectedDocId] = useState<string>("DOC-1");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/documents')
+      .then(res => res.json())
+      .then(data => {
+        setDocs(data);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        toast.error("Failed to load documents from database");
+        setIsLoading(false);
+      });
+  }, []);
   const [activeTab, setActiveTab] = useState<string>("All Documents");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedType, setSelectedType] = useState<string>("All Types");
@@ -73,7 +137,7 @@ export default function PolicyLibrary() {
 
   const selectedDoc = docs.find((d) => d.id === selectedDocId) || docs[0];
 
-  const handleUploadSubmit = (e: React.FormEvent) => {
+  const handleUploadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const createdDoc: PolicyDocument = {
@@ -119,12 +183,23 @@ export default function PolicyLibrary() {
       ]
     };
 
-    setDocs([createdDoc, ...docs]);
-    setSelectedDocId(createdDoc.id);
-    setIsUploadModalOpen(false);
-    toast.success(`Document ${newDocCode} successfully ingested!`, {
-      description: "AI Semantic Parser has extracted 18 clauses and flagged 1 critical gap."
-    });
+    try {
+      await fetch('/api/documents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(createdDoc)
+      });
+      
+      setDocs([createdDoc, ...docs]);
+      setSelectedDocId(createdDoc.id);
+      setIsUploadModalOpen(false);
+      toast.success(`Document ${newDocCode} successfully ingested!`, {
+        description: "AI Semantic Parser has extracted 18 clauses and flagged 1 critical gap."
+      });
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to save document to database");
+    }
   };
 
   const handleAutoFillDemo = () => {

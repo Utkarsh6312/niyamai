@@ -29,7 +29,6 @@ export function Sidebar({ className }: { className?: string }) {
     { name: "Policy Library", icon: BookOpen, href: "/policy-library" },
     { name: "Action Center", icon: CheckSquare, href: "/action-center" },
     { name: "Audit Trail", icon: History, href: "/audit-trail" },
-    { name: "Document Ingestion", icon: Upload, href: "/document-ingestion" },
     
     { section: "INTELLIGENCE", marginTop: "mt-6" },
     { name: "AI Assistant", icon: Sparkles, href: "/ai-assistant" },

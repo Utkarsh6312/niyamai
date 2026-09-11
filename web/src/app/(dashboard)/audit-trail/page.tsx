@@ -117,8 +117,23 @@ export default function AuditTrail() {
     }
   ];
 
-  const [selectedEventId, setSelectedEventId] = useState(events[0].id);
-  const selectedEvent = events.find(e => e.id === selectedEventId) || events[0];
+  const allEvents = [
+    ...events,
+    ...events.map(e => ({ ...e, id: e.id + "-PAGE2", date: "18 Aug 2026", time: "09:00 AM" })),
+    ...events.map(e => ({ ...e, id: e.id + "-PAGE3", date: "17 Aug 2026", time: "10:30 AM" }))
+  ];
+
+  const [sortOrder, setSortOrder] = useState("newest");
+  const sortedEvents = sortOrder === "newest" ? [...allEvents] : [...allEvents].reverse();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(sortedEvents.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedEvents = sortedEvents.slice(startIndex, startIndex + itemsPerPage);
+
+  const [selectedEventId, setSelectedEventId] = useState(paginatedEvents[0]?.id || events[0].id);
+  const selectedEvent = allEvents.find(e => e.id === selectedEventId) || events[0];
   const [detailsOpen, setDetailsOpen] = useState(true);
 
   return (
@@ -284,16 +299,26 @@ export default function AuditTrail() {
         <div className="flex-1 bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]   flex flex-col min-h-0 overflow-hidden">
           <div className="p-4 border-b border-border flex items-center justify-between bg-card shrink-0">
             <h2 className="font-serif text-lg font-bold text-primary-dark">Audit Log <span className="text-muted-foreground font-medium text-base">(1,284 events)</span></h2>
-            <div className="flex items-center gap-2 bg-secondary border border-border rounded-md px-3 py-1.5 text-sm font-medium cursor-pointer">
-              <RotateCcw className="w-3.5 h-3.5 text-muted-foreground" />
-              <span>Newest First</span>
-              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground ml-1" />
+            <div className="relative flex items-center">
+              <RotateCcw className="absolute left-3 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+              <select 
+                value={sortOrder}
+                onChange={(e) => {
+                  setSortOrder(e.target.value);
+                  setCurrentPage(1); // Reset to first page on sort
+                }}
+                className="bg-secondary border border-border rounded-md pl-9 pr-8 py-1.5 text-sm font-medium cursor-pointer appearance-none focus:outline-none focus:ring-1 focus:ring-indigo text-primary-dark"
+              >
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+              </select>
+              <ChevronDown className="absolute right-2.5 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
             </div>
           </div>
           
           <div className="flex-1 overflow-auto">
             <div className="min-w-[800px] divide-y divide-border">
-              {events.map((event) => (
+              {paginatedEvents.map((event) => (
                 <div 
                   key={event.id}
                   onClick={() => setSelectedEventId(event.id)}
@@ -339,17 +364,45 @@ export default function AuditTrail() {
           </div>
           
           <div className="p-4 border-t border-border flex items-center justify-between shrink-0 bg-card">
-            <span className="text-sm text-muted-foreground font-medium">Showing 1–10 of 1,284 events</span>
+            <span className="text-sm text-muted-foreground font-medium">Showing {startIndex + 1}–{Math.min(startIndex + itemsPerPage, sortedEvents.length)} of 1,284 events</span>
             <div className="flex items-center gap-1">
-              <button className="w-8 h-8 flex items-center justify-center rounded-md border border-border text-muted-foreground hover:bg-secondary"><ChevronLeft className="w-4 h-4" /></button>
-              <button className="w-8 h-8 flex items-center justify-center rounded-md bg-indigo text-white font-medium text-sm">1</button>
-              <button className="w-8 h-8 flex items-center justify-center rounded-md border border-border text-primary-dark hover:bg-secondary font-medium text-sm">2</button>
-              <button className="w-8 h-8 flex items-center justify-center rounded-md border border-border text-primary-dark hover:bg-secondary font-medium text-sm">3</button>
-              <button className="w-8 h-8 flex items-center justify-center rounded-md border border-border text-primary-dark hover:bg-secondary font-medium text-sm">4</button>
-              <button className="w-8 h-8 flex items-center justify-center rounded-md border border-border text-primary-dark hover:bg-secondary font-medium text-sm">5</button>
+              <button 
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="w-8 h-8 flex items-center justify-center rounded-md border border-border text-muted-foreground hover:bg-secondary disabled:opacity-50"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              
+              {Array.from({ length: totalPages }).map((_, i) => {
+                const page = i + 1;
+                return (
+                  <button 
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-8 h-8 flex items-center justify-center rounded-md font-medium text-sm transition-colors ${
+                      currentPage === page 
+                        ? 'bg-indigo text-white border-transparent' 
+                        : 'border border-border text-primary-dark hover:bg-secondary'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                );
+              })}
+              
               <span className="px-1 text-muted-foreground">...</span>
-              <button className="w-8 h-8 flex items-center justify-center rounded-md border border-border text-primary-dark hover:bg-secondary font-medium text-sm">129</button>
-              <button className="w-8 h-8 flex items-center justify-center rounded-md border border-border text-muted-foreground hover:bg-secondary"><ChevronRight className="w-4 h-4" /></button>
+              <button className="w-8 h-8 flex items-center justify-center rounded-md border border-border text-primary-dark hover:bg-secondary font-medium text-sm cursor-not-allowed">
+                129
+              </button>
+              
+              <button 
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="w-8 h-8 flex items-center justify-center rounded-md border border-border text-muted-foreground hover:bg-secondary disabled:opacity-50"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>
