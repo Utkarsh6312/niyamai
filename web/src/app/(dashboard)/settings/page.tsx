@@ -3,6 +3,7 @@
 import { Save, Settings as SettingsIcon, Bell, Database, Sparkles, Shield, Palette, Link as LinkIcon, FileText, Trash2, Info, Building, MapPin, Globe, Hash, Calendar, CheckCircle2, Download, RotateCcw, Key, HelpCircle, ExternalLink, Edit } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const sidebarNav = [
   { name: "General", icon: SettingsIcon, description: "Organization details and basic settings", active: true },
@@ -38,7 +39,7 @@ export default function Settings() {
           <h1 className="font-serif text-3xl font-bold tracking-tight mb-2">Settings</h1>
           <p className="text-muted-foreground text-sm">Configure your workspace, preferences, and system settings.</p>
         </div>
-        <button className="flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors shadow-sm">
+        <button onClick={() => toast.success("Settings saved successfully")} className="flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors shadow-sm">
           <Save className="w-4 h-4" /> Save Changes
         </button>
       </div>

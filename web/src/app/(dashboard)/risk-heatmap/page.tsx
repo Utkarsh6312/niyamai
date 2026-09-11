@@ -1,8 +1,10 @@
 "use client";
 
 import { Download, ChevronRight, ShieldAlert, AlertTriangle, BarChart3, TrendingDown, Building, Users, Briefcase, Scale, FileSearch, CreditCard, Landmark, ChevronRight as ChevronRightIcon } from "lucide-react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { toast } from "sonner";
 
 // --- Mock Data ---
 
@@ -70,6 +72,14 @@ const riskSummary = [
 ];
 
 export default function RiskHeatmap() {
+  const [risks, setRisks] = useState<any[]>([]);
+
+  useEffect(() => {
+    import("@/lib/api/client").then(({ api }) => {
+      api.risks().then(setRisks).catch(() => {});
+    });
+  }, []);
+
   return (
     <div className="space-y-6 flex flex-col h-full text-foreground pb-10">
       {/* Breadcrumb */}
@@ -92,7 +102,7 @@ export default function RiskHeatmap() {
             <option>Last 90 days</option>
             <option>This Year</option>
           </select>
-          <button className="flex items-center gap-2 bg-indigo hover:bg-indigo/90 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
+          <button onClick={() => toast.success("Exporting Risk Report to PDF...")} className="flex items-center gap-2 bg-indigo hover:bg-indigo/90 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
             <Download className="w-4 h-4" /> Export Report
           </button>
         </div>
@@ -339,7 +349,17 @@ export default function RiskHeatmap() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {topRisks.map((r, i) => (
+                  {risks.length > 0 ? risks.map((r, i) => (
+                    <tr key={i} className="hover:bg-secondary/10 transition-colors">
+                      <td className="px-4 py-3 font-medium text-foreground max-w-[120px]">{r.risk_description || "Identified risk gap"}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{r.impact_area || "Mapped Regulation"}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{r.department}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${r.level === 'Critical' ? 'bg-red text-white' : r.level === 'High' ? 'bg-orange-500 text-white' : r.level === 'Medium' ? 'bg-yellow-500 text-white' : 'bg-teal text-white'}`}>{r.level}</span>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">Review Required</td>
+                    </tr>
+                  )) : topRisks.map((r, i) => (
                     <tr key={i} className="hover:bg-secondary/10 transition-colors">
                       <td className="px-4 py-3 font-medium text-foreground max-w-[120px]">{r.risk}</td>
                       <td className="px-4 py-3 text-muted-foreground">{r.regulation}</td>

@@ -7,6 +7,7 @@ import {
   Headset, ExternalLink, ArrowRight, MoreVertical
 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export default function WorkspacesPage() {
   const workspaces = [
@@ -117,7 +118,7 @@ export default function WorkspacesPage() {
             <h1 className="font-serif text-3xl font-bold tracking-tight text-primary-dark">Enterprise Workspace</h1>
             <p className="text-muted-foreground mt-1">Select and manage your organization's regulatory workspace.</p>
           </div>
-          <button className="flex items-center gap-2 bg-indigo text-white px-4 py-2 rounded-md font-semibold text-sm hover:bg-indigo/90 transition-colors shadow-sm whitespace-nowrap">
+          <button onClick={() => toast.info("Opening workspace creation flow...")} className="flex items-center gap-2 bg-indigo text-white px-4 py-2 rounded-md font-semibold text-sm hover:bg-indigo/90 transition-colors shadow-sm whitespace-nowrap">
             <Plus className="w-4 h-4" /> Create Workspace
           </button>
         </div>
