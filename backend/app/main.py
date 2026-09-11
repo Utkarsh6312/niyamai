@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
 from app.database import init_db
-from app.routers import dashboard, regulations, obligations, policies, mappings, risks, actions, provenance, ingestion
+from app.routers import dashboard, regulations, obligations, policies, mappings, risks, actions, provenance, ingestion, feed
 
 settings = get_settings()
 
@@ -35,6 +35,7 @@ app.include_router(risks.router, prefix="/api")
 app.include_router(actions.router, prefix="/api")
 app.include_router(provenance.router, prefix="/api")
 app.include_router(ingestion.router, prefix="/api")
+app.include_router(feed.router, prefix="/api")
 
 
 @app.on_event("startup")
