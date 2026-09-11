@@ -1,80 +1,165 @@
+
 "use client";
 
 import { ChevronRight, Save, Plus, FileText, BarChart2, Users, ListChecks, Sparkles, ExternalLink, CheckCircle2, RefreshCw, AlertTriangle, Calendar, Clock, Maximize2, MoreHorizontal, History, Paperclip, Send, FileCheck } from "lucide-react";
 import Link from "next/link";
-import { useState, useRef, type ReactNode } from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react";
 
 type Message = {
-  id: number;
+  id: string | number;
   role: "assistant" | "user";
   content: ReactNode;
   time: string;
 };
 
-const initialMessages: Message[] = [
-  {
-    id: 1,
-    role: "assistant",
-    content: (
-      <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-sm p-3.5 text-[13px] text-slate-700 leading-relaxed shadow-sm">
-        <p className="mb-2.5 font-medium">Hello! I'm NiyamAI, your regulatory compliance assistant.</p>
-        <p className="mb-1.5 font-medium">I can help you:</p>
-        <ul className="list-disc pl-4 space-y-1 mb-2.5">
-          <li>Summarize regulations</li>
-          <li>Identify key obligations</li>
-          <li>Analyze compliance impacts</li>
-          <li>Suggest action items</li>
-          <li>Answer your compliance questions</li>
-        </ul>
-        <p className="font-medium">How can I help you today?</p>
-      </div>
-    ),
-    time: "01:24 PM",
-  },
-  {
-    id: 2,
-    role: "user",
-    content: "What are the main changes in the RBI KYC Amendment 2026?",
-    time: "01:25 PM",
-  },
-  {
-    id: 3,
-    role: "assistant",
-    content: (
-      <>
-        <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-sm p-3.5 text-[13px] text-slate-700 leading-relaxed shadow-sm">
-          <p className="mb-3 font-medium">Here are the main changes in the RBI KYC Amendment 2026:</p>
-          <div className="space-y-3">
-            {[
-              "Enhanced due diligence for higher risk customers (PEPs, non-face-to-face)",
-              "Additional verification of source of funds and wealth",
-              "Periodic review of customer accounts based on risk profile",
-              "Stricter transaction monitoring requirements",
-              "Updated record keeping and reporting obligations",
-            ].map((item, i) => (
-              <div key={i} className="flex gap-3">
-                <span className="w-5 h-5 rounded-full border border-[#2563EB] text-[#2563EB] flex items-center justify-center shrink-0 text-[10px] font-bold mt-0.5">{i + 1}</span>
-                <p>{item}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="flex gap-2 mt-2">
-          <button className="border border-[#2563EB]/40 text-[#2563EB] px-3 py-1.5 rounded-full text-[11px] font-semibold hover:bg-blue-50 transition-colors">Show more details</button>
-          <button className="border border-[#2563EB]/40 text-[#2563EB] px-3 py-1.5 rounded-full text-[11px] font-semibold hover:bg-blue-50 transition-colors">Create action items</button>
-        </div>
-      </>
-    ),
-    time: "01:25 PM",
-  },
-];
-
 export default function AIAssistant() {
-  const [messages] = useState<Message[]>(initialMessages);
-  const [isTyping] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  return (
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 1,
+      role: "assistant",
+      content: (
+        <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-sm p-3.5 text-[13px] text-slate-700 leading-relaxed shadow-sm">
+          <p className="mb-2.5 font-medium">Hello! I'm NiyamAI, your regulatory compliance assistant.</p>
+          <p className="mb-1.5 font-medium">I can help you:</p>
+          <ul className="list-disc pl-4 space-y-1 mb-2.5">
+            <li>Summarize regulations</li>
+            <li>Identify key obligations</li>
+            <li>Analyze compliance impacts</li>
+            <li>Suggest action items</li>
+            <li>Answer your compliance questions</li>
+          </ul>
+          <p className="font-medium">How can I help you today?</p>
+        </div>
+      ),
+      time: "01:24 PM",
+    }
+  ]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]);
+
+  const handleSend = (text?: string) => {
+    const messageText = text || inputValue;
+    if (!messageText.trim()) return;
+    
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      time: new Date().toLocaleTimeString([], {hour: "2-digit", minute:"2-digit"}),
+      content: messageText
+    };
+    
+    setMessages(prev => [...prev, userMsg]);
+    if (!text) setInputValue("");
+    setIsTyping(true);
+
+    setTimeout(() => {
+      let responseContent: ReactNode;
+      const lowerInput = userMsg.content?.toString().toLowerCase() || "";
+
+      if (lowerInput.includes("rbi") || lowerInput.includes("amendment") || lowerInput.includes("kyc")) {
+        responseContent = (
+          <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-sm p-4 text-[13px] text-slate-700 leading-relaxed shadow-sm w-full">
+            <div className="flex items-center gap-2 mb-3 border-b border-slate-100 pb-3">
+              <Sparkles className="w-4 h-4 text-purple-600" />
+              <h4 className="font-bold text-sm text-slate-800">Regulatory Analysis Complete</h4>
+              <span className="ml-auto bg-red-100 text-red-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase">High Impact</span>
+            </div>
+            
+            <p className="mb-4">
+              I have deeply analyzed the <strong>RBI KYC Master Direction Amendment (Aug 2026)</strong>. This circular introduces severe strictures around digital onboarding, effectively deprecating standard V-CIP without active liveness checks.
+            </p>
+
+            <div className="space-y-4 mb-4">
+              {/* Key Changes Section */}
+              <div className="bg-slate-50/80 rounded-lg p-3 border border-slate-100">
+                <h5 className="font-semibold text-slate-800 mb-2 flex items-center gap-1.5"><ListChecks className="w-3.5 h-3.5 text-blue-600" /> Key Mandates</h5>
+                <ul className="space-y-2.5">
+                  <li className="flex gap-2 items-start">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 mt-0.5 shrink-0" />
+                    <span><strong>Active Biometric Liveness (Clause 4.2):</strong> Passive liveness checks are no longer sufficient. Banks must implement active challenge-response protocols (e.g., randomized gestures) during video KYC.</span>
+                  </li>
+                  <li className="flex gap-2 items-start">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 mt-0.5 shrink-0" />
+                    <span><strong>Geofenced IP Verification (Clause 5.1):</strong> Strict IP geolocation correlation required during the onboarding flow.</span>
+                  </li>
+                  <li className="flex gap-2 items-start">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 mt-0.5 shrink-0" />
+                    <span><strong>C-KYCR Sync Window (Clause 7.3):</strong> Reporting window for new accounts to Central KYC Registry reduced from 10 days to 3 days.</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Impact Analysis Section */}
+              <div className="bg-orange-50/50 rounded-lg p-3 border border-orange-100">
+                <h5 className="font-semibold text-orange-800 mb-2 flex items-center gap-1.5"><AlertTriangle className="w-3.5 h-3.5" /> Detected Enterprise Gaps</h5>
+                <p className="mb-2 text-orange-900/80">I scanned Aarohan Bank's internal repositories and found <strong>2 critical deviations</strong>:</p>
+                <div className="space-y-2 text-xs">
+                  <div className="bg-white p-2.5 rounded border border-orange-100 flex justify-between items-center shadow-sm">
+                    <div>
+                      <span className="font-semibold text-slate-800 block">KYC Policy v3.4 §3.2</span>
+                      <span className="text-slate-500">Relies on passive liveness checks.</span>
+                    </div>
+                    <span className="text-red-600 font-bold bg-red-50 px-2 py-1 rounded">92% Gap</span>
+                  </div>
+                  <div className="bg-white p-2.5 rounded border border-orange-100 flex justify-between items-center shadow-sm">
+                    <div>
+                      <span className="font-semibold text-slate-800 block">Reporting SOP v2.1 §1.4</span>
+                      <span className="text-slate-500">States 10-day SLA for C-KYCR.</span>
+                    </div>
+                    <span className="text-red-600 font-bold bg-red-50 px-2 py-1 rounded">100% Gap</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100 mt-3">
+              <button className="flex items-center gap-1.5 bg-blue-600 text-white px-3 py-1.5 rounded-md font-medium hover:bg-blue-700 transition-colors shadow-sm">
+                <FileText className="w-3.5 h-3.5" /> Draft Policy Amendments
+              </button>
+              <button className="flex items-center gap-1.5 bg-white text-slate-700 border border-slate-200 px-3 py-1.5 rounded-md font-medium hover:bg-slate-50 transition-colors shadow-sm">
+                <Plus className="w-3.5 h-3.5" /> Create Action Items (2)
+              </button>
+            </div>
+          </div>
+        );
+      } else {
+        responseContent = (
+          <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-sm p-3.5 text-[13px] text-slate-700 leading-relaxed shadow-sm">
+            <p className="font-medium">I have analyzed your request. Based on our policy library and current regulations, I recommend reviewing the compliance mapping for this area.</p>
+          </div>
+        );
+      }
+
+      const aiMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        time: new Date().toLocaleTimeString([], {hour: "2-digit", minute:"2-digit"}),
+        content: responseContent
+      };
+      
+      setMessages(prev => [...prev, aiMsg]);
+      setIsTyping(false);
+    }, 1500);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+return (
     <div className="flex h-full gap-5 text-[#0F172A] pb-10">
       
       {/* Left: Main Dashboard Area */}
@@ -108,25 +193,25 @@ export default function AIAssistant() {
 
         {/* Prompt Suggestions */}
         <div className="grid grid-cols-4 gap-4">
-          <button className="bg-white border border-slate-200 rounded-lg p-3 flex items-center gap-3 hover:border-[#2563EB] hover:shadow-sm transition-all text-left group">
+          <button onClick={() => handleSend(`Summarize RBI KYC Amendment 2026`)} className="bg-white border border-slate-200 rounded-lg p-3 flex items-center gap-3 hover:border-[#2563EB] hover:shadow-sm transition-all text-left group">
             <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
               <FileText className="w-5 h-5 text-[#2563EB]" />
             </div>
             <span className="text-sm font-medium text-slate-700 leading-tight">"Summarize RBI KYC Amendment 2026"</span>
           </button>
-          <button className="bg-white border border-slate-200 rounded-lg p-3 flex items-center gap-3 hover:border-[#2563EB] hover:shadow-sm transition-all text-left group">
+          <button onClick={() => handleSend(`What are the key compliance impacts for our bank?`)} className="bg-white border border-slate-200 rounded-lg p-3 flex items-center gap-3 hover:border-[#2563EB] hover:shadow-sm transition-all text-left group">
             <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center shrink-0 group-hover:bg-purple-100 transition-colors">
               <BarChart2 className="w-5 h-5 text-purple-600" />
             </div>
             <span className="text-sm font-medium text-slate-700 leading-tight">"What are the key compliance impacts for our bank?"</span>
           </button>
-          <button className="bg-white border border-slate-200 rounded-lg p-3 flex items-center gap-3 hover:border-[#2563EB] hover:shadow-sm transition-all text-left group">
+          <button onClick={() => handleSend(`Which departments are affected?`)} className="bg-white border border-slate-200 rounded-lg p-3 flex items-center gap-3 hover:border-[#2563EB] hover:shadow-sm transition-all text-left group">
             <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
               <Users className="w-5 h-5 text-[#2563EB]" />
             </div>
             <span className="text-sm font-medium text-slate-700 leading-tight">"Which departments are affected?"</span>
           </button>
-          <button className="bg-white border border-slate-200 rounded-lg p-3 flex items-center gap-3 hover:border-[#2563EB] hover:shadow-sm transition-all text-left group">
+          <button onClick={() => handleSend(`Suggest action items with timelines`)} className="bg-white border border-slate-200 rounded-lg p-3 flex items-center gap-3 hover:border-[#2563EB] hover:shadow-sm transition-all text-left group">
             <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
               <ListChecks className="w-5 h-5 text-[#2563EB]" />
             </div>
@@ -408,10 +493,17 @@ export default function AIAssistant() {
             </button>
             <input 
               type="text" 
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
               placeholder="Ask a follow-up question..." 
               className="w-full pl-9 pr-11 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:border-[#2563EB] bg-white placeholder:text-slate-400"
             />
-            <button className="absolute right-1.5 w-7 h-7 rounded-md bg-[#2563EB] text-white flex items-center justify-center hover:bg-blue-700 transition-colors shadow-sm">
+            <button 
+              onClick={() => handleSend()}
+              disabled={!inputValue.trim() || isTyping}
+              className="absolute right-1.5 w-7 h-7 rounded-md bg-[#2563EB] text-white flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm"
+            >
               <Send className="w-3.5 h-3.5 ml-0.5" />
             </button>
           </div>
@@ -419,7 +511,6 @@ export default function AIAssistant() {
             NiyamAI may make mistakes. Please verify critical information.
           </p>
         </div>
-
       </div>
     </div>
   );
