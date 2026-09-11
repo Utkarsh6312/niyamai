@@ -97,8 +97,8 @@ function getLayoutedElements(nodes: Node[], edges: Edge[]) {
 }
 
 export function TraceGraph({ initialNodes = [], initialEdges = [] }: { initialNodes: any[], initialEdges: any[] }) {
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
   useEffect(() => {
     if (initialNodes.length > 0) {

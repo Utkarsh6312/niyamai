@@ -2,8 +2,78 @@
 
 import { ChevronRight, Save, Plus, FileText, BarChart2, Users, ListChecks, Sparkles, ExternalLink, CheckCircle2, RefreshCw, AlertTriangle, Calendar, Clock, Maximize2, MoreHorizontal, History, Paperclip, Send, FileCheck } from "lucide-react";
 import Link from "next/link";
+import { useState, useRef, type ReactNode } from "react";
+
+type Message = {
+  id: number;
+  role: "assistant" | "user";
+  content: ReactNode;
+  time: string;
+};
+
+const initialMessages: Message[] = [
+  {
+    id: 1,
+    role: "assistant",
+    content: (
+      <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-sm p-3.5 text-[13px] text-slate-700 leading-relaxed shadow-sm">
+        <p className="mb-2.5 font-medium">Hello! I'm NiyamAI, your regulatory compliance assistant.</p>
+        <p className="mb-1.5 font-medium">I can help you:</p>
+        <ul className="list-disc pl-4 space-y-1 mb-2.5">
+          <li>Summarize regulations</li>
+          <li>Identify key obligations</li>
+          <li>Analyze compliance impacts</li>
+          <li>Suggest action items</li>
+          <li>Answer your compliance questions</li>
+        </ul>
+        <p className="font-medium">How can I help you today?</p>
+      </div>
+    ),
+    time: "01:24 PM",
+  },
+  {
+    id: 2,
+    role: "user",
+    content: "What are the main changes in the RBI KYC Amendment 2026?",
+    time: "01:25 PM",
+  },
+  {
+    id: 3,
+    role: "assistant",
+    content: (
+      <>
+        <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-sm p-3.5 text-[13px] text-slate-700 leading-relaxed shadow-sm">
+          <p className="mb-3 font-medium">Here are the main changes in the RBI KYC Amendment 2026:</p>
+          <div className="space-y-3">
+            {[
+              "Enhanced due diligence for higher risk customers (PEPs, non-face-to-face)",
+              "Additional verification of source of funds and wealth",
+              "Periodic review of customer accounts based on risk profile",
+              "Stricter transaction monitoring requirements",
+              "Updated record keeping and reporting obligations",
+            ].map((item, i) => (
+              <div key={i} className="flex gap-3">
+                <span className="w-5 h-5 rounded-full border border-[#2563EB] text-[#2563EB] flex items-center justify-center shrink-0 text-[10px] font-bold mt-0.5">{i + 1}</span>
+                <p>{item}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="flex gap-2 mt-2">
+          <button className="border border-[#2563EB]/40 text-[#2563EB] px-3 py-1.5 rounded-full text-[11px] font-semibold hover:bg-blue-50 transition-colors">Show more details</button>
+          <button className="border border-[#2563EB]/40 text-[#2563EB] px-3 py-1.5 rounded-full text-[11px] font-semibold hover:bg-blue-50 transition-colors">Create action items</button>
+        </div>
+      </>
+    ),
+    time: "01:25 PM",
+  },
+];
 
 export default function AIAssistant() {
+  const [messages] = useState<Message[]>(initialMessages);
+  const [isTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
   return (
     <div className="flex h-full gap-5 text-[#0F172A] pb-10">
       
@@ -289,80 +359,45 @@ export default function AIAssistant() {
 
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-slate-50/30">
-          
-          {/* AI Message */}
-          <div className="flex gap-3">
-            <div className="w-7 h-7 rounded-full bg-purple-100 flex items-center justify-center shrink-0 mt-1">
-              <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-            </div>
-            <div className="flex-1 min-w-0 space-y-1.5">
-              <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-sm p-3.5 text-[13px] text-slate-700 leading-relaxed shadow-sm">
-                <p className="mb-2.5 font-medium">Hello! I'm NiyamAI, your regulatory compliance assistant.</p>
-                <p className="mb-1.5 font-medium">I can help you:</p>
-                <ul className="list-disc pl-4 space-y-1 mb-2.5">
-                  <li>Summarize regulations</li>
-                  <li>Identify key obligations</li>
-                  <li>Analyze compliance impacts</li>
-                  <li>Suggest action items</li>
-                  <li>Answer your compliance questions</li>
-                </ul>
-                <p className="font-medium">How can I help you today?</p>
-              </div>
-              <p className="text-[9px] text-slate-400 font-semibold ml-1">01:24 PM</p>
-            </div>
-          </div>
-
-          {/* User Message */}
-          <div className="flex gap-3 flex-row-reverse">
-            <div className="w-7 h-7 rounded-full bg-[#0F172A] text-white flex items-center justify-center shrink-0 mt-1 font-bold text-xs">
-              U
-            </div>
-            <div className="flex-1 min-w-0 space-y-1.5 flex flex-col items-end">
-              <div className="bg-[#EBF3FF] rounded-2xl rounded-tr-sm p-3.5 text-[13px] text-[#0F172A] font-medium leading-relaxed max-w-[90%]">
-                What are the main changes in the RBI KYC Amendment 2026?
-              </div>
-              <p className="text-[9px] text-slate-400 font-semibold mr-1">01:25 PM</p>
-            </div>
-          </div>
-
-          {/* AI Message */}
-          <div className="flex gap-3">
-            <div className="w-7 h-7 rounded-full bg-purple-100 flex items-center justify-center shrink-0 mt-1">
-              <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-            </div>
-            <div className="flex-1 min-w-0 space-y-1.5">
-              <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-sm p-3.5 text-[13px] text-slate-700 leading-relaxed shadow-sm">
-                <p className="mb-3 font-medium">Here are the main changes in the RBI KYC Amendment 2026:</p>
-                <div className="space-y-3">
-                  <div className="flex gap-3">
-                    <span className="w-5 h-5 rounded-full border border-[#2563EB] text-[#2563EB] flex items-center justify-center shrink-0 text-[10px] font-bold mt-0.5">1</span>
-                    <p>Enhanced due diligence for higher risk customers (PEPs, non-face-to-face)</p>
-                  </div>
-                  <div className="flex gap-3">
-                    <span className="w-5 h-5 rounded-full border border-[#2563EB] text-[#2563EB] flex items-center justify-center shrink-0 text-[10px] font-bold mt-0.5">2</span>
-                    <p>Additional verification of source of funds and wealth</p>
-                  </div>
-                  <div className="flex gap-3">
-                    <span className="w-5 h-5 rounded-full border border-[#2563EB] text-[#2563EB] flex items-center justify-center shrink-0 text-[10px] font-bold mt-0.5">3</span>
-                    <p>Periodic review of customer accounts based on risk profile</p>
-                  </div>
-                  <div className="flex gap-3">
-                    <span className="w-5 h-5 rounded-full border border-[#2563EB] text-[#2563EB] flex items-center justify-center shrink-0 text-[10px] font-bold mt-0.5">4</span>
-                    <p>Stricter transaction monitoring requirements</p>
-                  </div>
-                  <div className="flex gap-3">
-                    <span className="w-5 h-5 rounded-full border border-[#2563EB] text-[#2563EB] flex items-center justify-center shrink-0 text-[10px] font-bold mt-0.5">5</span>
-                    <p>Updated record keeping and reporting obligations</p>
-                  </div>
+          {messages.map((msg) => (
+            <div key={msg.id} className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
+              {msg.role === "assistant" ? (
+                <div className="w-7 h-7 rounded-full bg-purple-100 flex items-center justify-center shrink-0 mt-1">
+                  <Sparkles className="w-3.5 h-3.5 text-purple-600" />
                 </div>
+              ) : (
+                <div className="w-7 h-7 rounded-full bg-[#0F172A] text-white flex items-center justify-center shrink-0 mt-1 font-bold text-xs">
+                  U
+                </div>
+              )}
+              
+              <div className={`flex-1 min-w-0 space-y-1.5 ${msg.role === "user" ? "flex flex-col items-end" : ""}`}>
+                {msg.role === "user" ? (
+                  <div className="bg-[#EBF3FF] rounded-2xl rounded-tr-sm p-3.5 text-[13px] text-[#0F172A] font-medium leading-relaxed max-w-[90%]">
+                    {msg.content}
+                  </div>
+                ) : (
+                  msg.content
+                )}
+                <p className={`text-[9px] text-slate-400 font-semibold ${msg.role === "user" ? "mr-1" : "ml-1"} mt-1.5`}>{msg.time}</p>
               </div>
-              <div className="flex gap-2 mt-2">
-                <button className="border border-[#2563EB]/40 text-[#2563EB] px-3 py-1.5 rounded-full text-[11px] font-semibold hover:bg-blue-50 transition-colors">Show more details</button>
-                <button className="border border-[#2563EB]/40 text-[#2563EB] px-3 py-1.5 rounded-full text-[11px] font-semibold hover:bg-blue-50 transition-colors">Create action items</button>
-              </div>
-              <p className="text-[9px] text-slate-400 font-semibold ml-1 mt-1.5">01:25 PM</p>
             </div>
-          </div>
+          ))}
+          
+          {isTyping && (
+             <div className="flex gap-3">
+               <div className="w-7 h-7 rounded-full bg-purple-100 flex items-center justify-center shrink-0 mt-1">
+                 <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+               </div>
+               <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-sm p-4 shadow-sm flex items-center gap-1.5 w-fit">
+                  <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
+                  <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></div>
+                  <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
+               </div>
+             </div>
+          )}
+          
+          <div ref={messagesEndRef} />
         </div>
 
         {/* Chat Input */}
