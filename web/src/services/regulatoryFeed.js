@@ -1,0 +1,1 @@
+export { fetchRbiFeed } from "./regulatoryFeed";

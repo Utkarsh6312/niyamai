@@ -25,7 +25,7 @@ export default function ActionCenter() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/actions')
+    fetch('/api/actions?t=' + Date.now())
       .then(res => res.json())
       .then(data => {
         setActions(data);
@@ -189,11 +189,31 @@ export default function ActionCenter() {
                 ))}
               </tbody>
             </table>
+
+            {/* Empty state */}
+            {!isLoading && actions.length === 0 && (
+              <div className="py-16 flex flex-col items-center gap-4 text-center">
+                <FileText className="w-10 h-10 text-muted-foreground/40" />
+                <div>
+                  <p className="font-semibold text-foreground">No actions yet</p>
+                  <p className="text-sm text-muted-foreground mt-1">Go to Impact Analysis to upload an RBI PDF and auto-generate compliance actions.</p>
+                </div>
+                <Link href="/impact-analysis" className="px-4 py-2 bg-indigo text-white text-sm font-semibold rounded hover:bg-indigo/90 transition-colors">
+                  Go to Impact Analysis →
+                </Link>
+              </div>
+            )}
+
+            {isLoading && (
+              <div className="py-16 flex items-center justify-center">
+                <div className="w-6 h-6 border-2 border-indigo border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
           </div>
 
           {/* Pagination */}
           <div className="p-4 border-t border-border flex items-center justify-between text-sm text-muted-foreground">
-            <div>Showing 1–10 of 63 actions</div>
+            <div>Showing {actions.length} action{actions.length !== 1 ? "s" : ""} from RBI KYC Guidelines</div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1 border border-border rounded bg-background p-1">
                 <button className="px-2 py-1 text-muted-foreground hover:text-foreground">{"<"}</button>

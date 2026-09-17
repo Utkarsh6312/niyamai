@@ -5,6 +5,7 @@ from functools import lru_cache
 class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite+aiosqlite:///./niyamai.db"
     GEMINI_API_KEY: str = ""
+    NEWS_API_KEY: str = ""  # NewsAPI.org key — leave empty to use fallback news
     APP_NAME: str = "NiyamAI"
     ENVIRONMENT: str = "development"
     CORS_ORIGINS: str = "http://localhost:3000"
