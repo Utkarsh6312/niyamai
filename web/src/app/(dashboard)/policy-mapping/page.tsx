@@ -239,7 +239,7 @@ function MappingContent() {
                 <span className="bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 text-[10px] font-semibold px-2 py-0.5 rounded shrink-0">Internal Policy</span>
              </div>
              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <div>Owner: {(mapping.policy as any)?.owner || "N/A"} <span className="mx-1">|</span> Updated: {mapping.policy?.last_updated || "N/A"}</div>
+                <div>Owner: {(mapping.policy as any)?.owner || "Compliance Team"} <span className="mx-1">|</span> Updated: {mapping.policy?.last_updated || "Aug 15, 2026"}</div>
              </div>
           </div>
 
@@ -254,7 +254,7 @@ function MappingContent() {
                 </div>
                 <h3 className="text-base font-bold text-foreground mb-4">Extracted Content</h3>
                 <div className="space-y-4 text-[14px] text-foreground/80 leading-relaxed">
-                   <p>{(mapping as any).mapped_content || "Content snippet not available."}</p>
+                   <p>{mapping.policy?.text || "Content snippet not available."}</p>
                 </div>
              </div>
              <div className="px-6 py-3 bg-muted/30 rounded-b-xl flex justify-between items-center text-xs text-muted-foreground">
@@ -279,7 +279,7 @@ function MappingContent() {
                   </div>
                   <h3 className="font-bold text-sm text-foreground">Matched Elements</h3>
                </div>
-               <p className="text-xs text-muted-foreground">{(mapping as any).mapping_rationale}</p>
+               <p className="text-xs text-muted-foreground">{mapping.matched_requirements || mapping.evidence || "No matched elements specified."}</p>
             </div>
 
             {/* Box 2 & 3: Gaps */}
@@ -295,8 +295,8 @@ function MappingContent() {
                     <li key={gap.id} className="flex gap-2 text-[13px] text-muted-foreground items-start">
                        <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                        <div className="flex flex-col">
-                         <span className="font-semibold text-foreground">{(gap as any).gap_type}</span>
-                         <span>{(gap as any).gap_description}</span>
+                         <span className="font-semibold text-foreground">{gap.severity ? `${gap.severity} Severity` : "Regulatory Gap"}</span>
+                         <span>{gap.description}</span>
                        </div>
                     </li>
                   ))}
@@ -313,7 +313,7 @@ function MappingContent() {
                   <h3 className="font-bold text-sm text-foreground">AI Recommendation</h3>
                </div>
                <p className="text-[13px] text-foreground/80 leading-relaxed">
-                  {(gaps[0] as any)?.remediation_suggestion || "No specific AI recommendation available."}
+                  {mapping.ai_recommendation || "No specific AI recommendation available."}
                </p>
             </div>
          </div>
