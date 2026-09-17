@@ -19,6 +19,7 @@ const sidebarNav = [
 ];
 
 export default function Settings() {
+  const [activeTab, setActiveTab] = useState("General");
   const [enableAI, setEnableAI] = useState(true);
   const [enableReminders, setEnableReminders] = useState(true);
   const [enableVisibility, setEnableVisibility] = useState(true);
@@ -70,17 +71,14 @@ export default function Settings() {
           {sidebarNav.map((item) => (
             <div 
               key={item.name} 
-              className={`flex items-start gap-3 px-4 py-3 cursor-pointer transition-colors border-l-2 ${
-                item.active 
-                  ? "bg-blue-50/50 border-[#2563EB]" 
-                  : "border-transparent hover:bg-slate-50"
-              }`}
+              onClick={() => setActiveTab(item.name)}
+              className={`flex items-start gap-3 px-4 py-3 cursor-pointer transition-colors border-l-2 ${activeTab === item.name ? "bg-blue-50/50 border-[#2563EB]" : "border-transparent hover:bg-slate-50"}`}
             >
-              <div className={`mt-0.5 ${item.active ? "text-[#2563EB]" : "text-slate-500"}`}>
+              <div className={`mt-0.5 ${activeTab === item.name ? "text-[#2563EB]" : "text-slate-500"}`}>
                 <item.icon className="w-5 h-5" />
               </div>
               <div>
-                <p className={`text-sm font-semibold ${item.active ? "text-[#0F172A]" : "text-slate-700"}`}>{item.name}</p>
+                <p className={`text-sm font-semibold ${activeTab === item.name ? "text-[#0F172A]" : "text-slate-700"}`}>{item.name}</p>
                 <p className="text-xs text-slate-500 mt-0.5">{item.description}</p>
               </div>
             </div>
@@ -89,6 +87,7 @@ export default function Settings() {
 
         {/* Center Content */}
         <div className="flex-1 space-y-6">
+          {activeTab === "General" ? (
           <div className="bg-white border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-6">
             <h2 className="font-serif text-xl font-bold text-[#0F172A] mb-1">General Settings</h2>
             <p className="text-sm text-slate-500 mb-6">Manage your organization's basic information and preferences.</p>
@@ -220,6 +219,16 @@ export default function Settings() {
 
             </div>
           </div>
+          ) : (
+            <div className="bg-white border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-6">
+              <h2 className="font-serif text-xl font-bold text-[#0F172A] mb-1">{activeTab}</h2>
+              <p className="text-sm text-slate-500 mb-6">Manage settings and preferences for {activeTab}.</p>
+              <div className="flex flex-col items-center justify-center p-12 text-slate-400 gap-4 border-2 border-dashed border-slate-200 bg-slate-50 rounded-xl">
+                <SettingsIcon className="w-8 h-8 opacity-50" />
+                <p>This settings panel is currently under construction.</p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right Sidebar */}

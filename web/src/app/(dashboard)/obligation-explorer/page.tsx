@@ -34,8 +34,35 @@ export default function ObligationExplorer() {
       setLoading(true);
       try {
         const data = await api.obligations();
-        setObligations(data);
-        if (data.length > 0) setSelectedObId(data[0].id);
+        if (data.length > 3) {
+          setObligations(data);
+          if (data.length > 0) setSelectedObId(data[0].id);
+        } else {
+          // Populate with rich demo data
+          const mockObligations: Obligation[] = [
+            ...data,
+            { id: "OBL-001", regulation_id: "REG-RBI-KYC", clause_id: "CL-4.2", obligation_code: "OBL-RBI-001", requirement: "Banks must perform V-CIP (Video-based Customer Identification Process) for all new individual accounts opened remotely.", type: "Process", department: "Compliance", impact: "Critical", status: "In Progress", deadline: "2026-12-31", confidence: 95, regulation_title: "RBI KYC Master Direction 2025", clause_no: "Clause 4.2" },
+            { id: "OBL-002", regulation_id: "REG-RBI-KYC", clause_id: "CL-5.1", obligation_code: "OBL-RBI-002", requirement: "Customer Due Diligence (CDD) must be updated periodically for all high-risk customers within 12 months.", type: "Reporting", department: "Risk Management", impact: "High", status: "Not Started", deadline: "2026-09-30", confidence: 92, regulation_title: "RBI KYC Master Direction 2025", clause_no: "Clause 5.1" },
+            { id: "OBL-003", regulation_id: "REG-RBI-KYC", clause_id: "CL-6.3", obligation_code: "OBL-RBI-003", requirement: "Maintain records of all transactions above ₹10 lakhs and report Suspicious Transaction Reports (STRs) to FIU-IND within 7 days.", type: "Reporting", department: "Operations", impact: "Critical", status: "Compliant", confidence: 98, regulation_title: "RBI KYC Master Direction 2025", clause_no: "Clause 6.3" },
+            { id: "OBL-004", regulation_id: "REG-SEBI-LODR", clause_id: "CL-17", obligation_code: "OBL-SEBI-001", requirement: "Listed entities must submit quarterly compliance reports to stock exchanges within 15 days of quarter end.", type: "Disclosure", department: "Legal", impact: "High", status: "Compliant", deadline: "2026-10-15", confidence: 88, regulation_title: "SEBI LODR Regulations 2024", clause_no: "Regulation 17" },
+            { id: "OBL-005", regulation_id: "REG-SEBI-LODR", clause_id: "CL-30", obligation_code: "OBL-SEBI-002", requirement: "Ensure independent directors constitute at least one-third of the board and audit committee is chaired by an independent director.", type: "Governance", department: "Legal", impact: "Medium", status: "Compliant", confidence: 91, regulation_title: "SEBI LODR Regulations 2024", clause_no: "Regulation 30" },
+            { id: "OBL-006", regulation_id: "REG-RBI-CYBER", clause_id: "CL-2.1", obligation_code: "OBL-RBI-004", requirement: "Implement multi-factor authentication for all internet banking and mobile banking customers.", type: "Technology", department: "IT Security", impact: "Critical", status: "In Progress", deadline: "2026-11-15", confidence: 94, regulation_title: "RBI Cybersecurity Framework", clause_no: "Clause 2.1" },
+            { id: "OBL-007", regulation_id: "REG-RBI-CYBER", clause_id: "CL-3.5", obligation_code: "OBL-RBI-005", requirement: "Conduct comprehensive cyber security audits at least once every quarter and report findings to the Board.", type: "Audit", department: "IT Security", impact: "High", status: "Not Started", deadline: "2026-10-31", confidence: 87, regulation_title: "RBI Cybersecurity Framework", clause_no: "Clause 3.5" },
+            { id: "OBL-008", regulation_id: "REG-RBI-LCR", clause_id: "CL-8", obligation_code: "OBL-RBI-006", requirement: "Maintain Liquidity Coverage Ratio (LCR) of at least 100% at all times. Report daily LCR to RBI.", type: "Reporting", department: "Treasury", impact: "Critical", status: "Compliant", confidence: 96, regulation_title: "RBI LCR & NSFR Guidelines", clause_no: "Clause 8" },
+            { id: "OBL-009", regulation_id: "REG-MCA-CSR", clause_id: "CL-135", obligation_code: "OBL-MCA-001", requirement: "Spend at least 2% of average net profits on CSR activities and disclose in annual report per Schedule VII.", type: "Disclosure", department: "Finance", impact: "Medium", status: "Not Started", deadline: "2027-03-31", confidence: 85, regulation_title: "Companies Act 2013 - CSR", clause_no: "Section 135" },
+            { id: "OBL-010", regulation_id: "REG-RBI-KYC", clause_id: "CL-10.2", obligation_code: "OBL-RBI-007", requirement: "Screen all customers and beneficial owners against UNSC sanctions list and domestic PEP databases before account opening.", type: "Process", department: "Compliance", impact: "Critical", status: "Compliant", confidence: 97, regulation_title: "RBI KYC Master Direction 2025", clause_no: "Clause 10.2" },
+            { id: "OBL-011", regulation_id: "REG-RBI-DPDP", clause_id: "CL-4", obligation_code: "OBL-DPDP-001", requirement: "Obtain verifiable consent from data principals before processing personal data. Maintain consent records.", type: "Process", department: "Data Privacy", impact: "High", status: "In Progress", deadline: "2026-12-01", confidence: 89, regulation_title: "DPDP Act 2023 Rules", clause_no: "Section 4" },
+            { id: "OBL-012", regulation_id: "REG-RBI-DPDP", clause_id: "CL-8", obligation_code: "OBL-DPDP-002", requirement: "Notify the Data Protection Board and affected data principals within 72 hours of discovering a personal data breach.", type: "Reporting", department: "Data Privacy", impact: "Critical", status: "Not Started", deadline: "2026-11-01", confidence: 93, regulation_title: "DPDP Act 2023 Rules", clause_no: "Section 8" },
+            { id: "OBL-013", regulation_id: "REG-IRDAI-GOV", clause_id: "CL-12", obligation_code: "OBL-IRDAI-001", requirement: "Insurance companies must appoint a Chief Risk Officer and establish a dedicated risk management committee.", type: "Governance", department: "Risk Management", impact: "Medium", status: "Compliant", confidence: 90, regulation_title: "IRDAI Corporate Governance Guidelines", clause_no: "Regulation 12" },
+            { id: "OBL-014", regulation_id: "REG-RBI-NPA", clause_id: "CL-3", obligation_code: "OBL-RBI-008", requirement: "Classify loan accounts as NPA if interest/installment remains overdue for more than 90 days. Implement automated NPA classification.", type: "Process", department: "Credit", impact: "High", status: "Compliant", confidence: 96, regulation_title: "RBI IRAC Norms", clause_no: "Clause 3" },
+            { id: "OBL-015", regulation_id: "REG-SEBI-PIT", clause_id: "CL-9", obligation_code: "OBL-SEBI-003", requirement: "Maintain a Structured Digital Database of persons with access to UPSI and submit to SEBI upon request.", type: "Technology", department: "Legal", impact: "High", status: "In Progress", deadline: "2026-10-01", confidence: 86, regulation_title: "SEBI PIT Regulations", clause_no: "Regulation 9" },
+          ];
+          // Deduplicate by id
+          const seen = new Set<string>();
+          const unique = mockObligations.filter(o => { if (seen.has(o.id)) return false; seen.add(o.id); return true; });
+          setObligations(unique);
+          if (unique.length > 0) setSelectedObId(unique[0].id);
+        }
       } catch {
         // handle err
       } finally {

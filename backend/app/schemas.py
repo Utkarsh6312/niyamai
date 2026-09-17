@@ -107,6 +107,7 @@ class MappingOut(BaseModel):
     review_status: str
     obligation: Optional[ObligationOut] = None
     policy: Optional[PolicyOut] = None
+    gaps: list["GapOut"] = []
 
     class Config:
         from_attributes = True

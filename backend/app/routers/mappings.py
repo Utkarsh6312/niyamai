@@ -13,7 +13,7 @@ router = APIRouter(prefix="/mappings", tags=["mappings"])
 async def get_mapping(mapping_id: str, db: AsyncSession = Depends(get_db)):
     result = await db.execute(
         select(Mapping)
-        .options(selectinload(Mapping.obligation), selectinload(Mapping.policy))
+        .options(selectinload(Mapping.obligation), selectinload(Mapping.policy), selectinload(Mapping.gaps))
         .where(Mapping.id == mapping_id)
     )
     m = result.scalar_one_or_none()
@@ -26,7 +26,7 @@ async def get_mapping(mapping_id: str, db: AsyncSession = Depends(get_db)):
 async def get_mappings_for_obligation(obligation_id: str, db: AsyncSession = Depends(get_db)):
     result = await db.execute(
         select(Mapping)
-        .options(selectinload(Mapping.policy))
+        .options(selectinload(Mapping.obligation), selectinload(Mapping.policy), selectinload(Mapping.gaps))
         .where(Mapping.obligation_id == obligation_id)
     )
     return result.scalars().all()
