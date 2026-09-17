@@ -450,7 +450,7 @@ export default function RegulatoryIntelligenceFeed() {
       {/* ── Header ── */}
       <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
         <div>
-          <h1 className="font-serif text-3xl md:text-4xl font-extrabold tracking-tight text-foreground">
+          <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-foreground">
             Regulatory Intelligence Feed
           </h1>
           <p className="text-muted-foreground mt-1.5 text-sm md:text-base font-medium max-w-2xl">
@@ -488,7 +488,7 @@ export default function RegulatoryIntelligenceFeed() {
       </div>
 
       {/* ── KPI Cards ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <KpiCard title="Total Intelligence" value={loading ? "…" : String(totalCount)} label="Monitored updates" icon={<FileCheck className="w-5 h-5 text-indigo" />} bg="bg-indigo/10" />
         <KpiCard title="RBI Directives" value={loading ? "…" : String(rbiCount)} label="Official RBI circulars" icon={<Landmark className="w-5 h-5 text-emerald-700" />} bg="bg-emerald-50 border border-emerald-200" />
         <KpiCard title="High Impact" value={loading ? "…" : String(highCount)} label="Critical action required" icon={<ShieldAlert className="w-5 h-5 text-red" />} bg="bg-red/10 border border-red/20" />
@@ -532,7 +532,7 @@ export default function RegulatoryIntelligenceFeed() {
             )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <div className="flex items-center gap-1.5">
               <Filter className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
               <select
@@ -675,7 +675,7 @@ function RbiCard({ item, formatDate }: { item: FeedItem; formatDate: (d: string)
       </p>
 
       {/* Footer */}
-      <div className="pt-3 border-t-2 border-black/10 flex items-center justify-between gap-2 mt-auto">
+      <div className="pt-3 border-t-2 border-black/10 flex flex-col sm:flex-row items-center justify-between gap-2 mt-auto">
         <div className="flex items-center gap-2 text-[11px] font-semibold text-muted-foreground">
           <span className="font-bold text-foreground flex items-center gap-1">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
@@ -761,7 +761,7 @@ function NewsCard({ item, formatDate }: { item: FeedItem; formatDate: (d: string
       </p>
 
       {/* Footer */}
-      <div className="pt-3 border-t-2 border-border flex items-center justify-between gap-2 mt-auto">
+      <div className="pt-3 border-t-2 border-border flex flex-col sm:flex-row items-center justify-between gap-2 mt-auto">
         <div className="flex items-center gap-2 text-[11px] font-semibold text-muted-foreground">
           <span className="px-1.5 py-0.5 bg-secondary border border-black/20 text-foreground font-bold text-[10px]">
             {item.source}

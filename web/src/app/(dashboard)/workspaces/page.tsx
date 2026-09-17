@@ -141,7 +141,7 @@ export default function WorkspacesPage() {
         </div>
 
         {/* Hero Banner */}
-        <div className="relative rounded-xl overflow-hidden bg-[#0d1828] text-white p-8 sm:p-10 min-h-[220px] flex items-center shadow-md">
+        <div className="relative rounded-xl overflow-hidden bg-[#0d1828] text-white p-5 sm:p-8 md:p-10 min-h-[220px] flex items-center shadow-md">
           {/* Decorative mountain-like background element */}
           <div className="absolute right-0 bottom-0 top-0 w-2/3 opacity-30 pointer-events-none">
              <div className="absolute inset-0 bg-gradient-to-r from-[#0d1828] to-transparent z-10" />
@@ -162,7 +162,7 @@ export default function WorkspacesPage() {
 
           <div className="relative z-20 max-w-xl">
             <p className="text-xs font-semibold tracking-[0.2em] text-white/70 mb-3 uppercase">Welcome to Niyamai</p>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold leading-tight mb-4">
+            <h2 className="font-serif text-2xl sm:text-4xl font-bold leading-tight mb-4">
               Turn Regulatory Change<br />
               into <span className="text-teal-400">Confident Action</span>
             </h2>
@@ -272,7 +272,7 @@ export default function WorkspacesPage() {
         </div>
 
         {/* Bottom Banner */}
-        <div className="bg-secondary/30 border border-border rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="bg-secondary/30 border border-border rounded-xl p-4 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-indigo flex items-center justify-center shrink-0">
               <Building2 className="w-6 h-6 text-white" />
@@ -282,7 +282,7 @@ export default function WorkspacesPage() {
               <p className="text-sm text-muted-foreground">Manage regulatory obligations, policies, and compliance activities across all your business units — securely and efficiently.</p>
             </div>
           </div>
-          <div className="flex items-center gap-8 shrink-0 divide-x divide-border">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full md:w-auto">
             <div className="text-center px-4">
               <div className="text-2xl font-bold text-indigo">5</div>
               <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mt-1">Workspaces</div>

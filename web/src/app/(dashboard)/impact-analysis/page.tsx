@@ -483,7 +483,7 @@ export default function ImpactAnalysis() {
                 NiyamAI Analysis Engine v2.4
               </span>
             </div>
-            <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight">
+            <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">
               Regulatory Impact Analysis & Policy Gap Engine
             </h1>
             <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
@@ -545,7 +545,7 @@ export default function ImpactAnalysis() {
 
       {/* ── UPLOAD PROMPT (no analysis yet) ────────────────────────────── */}
       {!hasAnalyzed && !analyzing && (
-        <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-16 flex flex-col items-center text-center gap-6">
+        <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-6 sm:p-12 md:p-16 flex flex-col items-center text-center gap-6">
           <div className="w-20 h-20 bg-indigo/10 border-2 border-indigo/30 flex items-center justify-center">
             <ScanLine className="w-10 h-10 text-indigo" />
           </div>
@@ -825,7 +825,7 @@ export default function ImpactAnalysis() {
       {/* ── EVIDENCE DRAWER ─────────────────────────────────────────────── */}
       {isEvidenceDrawerOpen && selectedFinding && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-card border-[3px] border-black rounded-none shadow-[10px_10px_0_0_#000000] max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+          <div className="bg-card border-[3px] border-black rounded-none shadow-[10px_10px_0_0_#000000] max-w-4xl w-full m-2 sm:m-4 max-h-[90vh] flex flex-col overflow-hidden">
             <div className="p-5 border-b-2 border-black flex items-center justify-between bg-secondary/20">
               <div className="flex items-center gap-3">
                 <FileCheck className="w-6 h-6 text-indigo" />

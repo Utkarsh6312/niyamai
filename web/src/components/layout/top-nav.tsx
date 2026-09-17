@@ -1,5 +1,5 @@
 "use client";
-import { Search, Bell, HelpCircle, ChevronDown, User, LogOut, Settings as SettingsIcon, Menu } from "lucide-react";
+import { Search, Bell, HelpCircle, ChevronDown, User, LogOut, Settings as SettingsIcon, Menu, AlertTriangle, Shield, FileCheck } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Sidebar } from "@/components/layout/sidebar";
 import { useState, useEffect } from "react";
@@ -11,6 +11,7 @@ import Link from "next/link";
 
 export function TopNav() {
   const [searchOpen, setSearchOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(3);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -80,34 +81,71 @@ export function TopNav() {
         <Popover>
           <PopoverTrigger className="relative p-2 rounded-full hover:bg-white/5 transition-colors text-white">
              <Bell className="w-5 h-5" />
-             <div className="absolute top-1.5 right-1.5 w-3 h-3 rounded-full bg-red text-[8px] font-bold flex items-center justify-center border-2 border-[#08111F]">3</div>
+             {unreadCount > 0 && (
+               <div className="absolute top-1.5 right-1.5 w-3 h-3 rounded-full bg-red text-[8px] font-bold flex items-center justify-center border-2 border-[#08111F]">
+                 {unreadCount}
+               </div>
+             )}
           </PopoverTrigger>
-          <PopoverContent className="w-80 p-0" align="end">
-            <div className="p-4 border-b border-border flex justify-between items-center bg-secondary/50">
-               <span className="font-semibold text-sm">Notifications</span>
-               <span className="text-xs text-indigo cursor-pointer hover:underline">Mark all as read</span>
+          <PopoverContent className="w-96 p-0 border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]" align="end">
+            <div className="p-4 border-b border-border flex justify-between items-center bg-card">
+               <span className="font-bold text-sm flex items-center gap-2"><Bell className="w-4 h-4" /> Notifications</span>
+               {unreadCount > 0 && (
+                 <button 
+                   onClick={() => setUnreadCount(0)}
+                   className="text-xs text-indigo font-semibold hover:underline"
+                 >
+                   Mark all as read
+                 </button>
+               )}
             </div>
-            <div className="divide-y divide-border max-h-[300px] overflow-y-auto">
-               <div className="p-4 hover:bg-secondary/30 transition-colors cursor-pointer bg-indigo/5">
-                 <div className="flex gap-3">
-                   <div className="w-2 h-2 rounded-full bg-indigo mt-1.5 shrink-0" />
-                   <div>
-                     <p className="text-sm font-medium">New Regulatory Update</p>
-                     <p className="text-xs text-muted-foreground mt-1">RBI KYC Master Direction amendment requires your attention.</p>
-                     <p className="text-[10px] text-muted-foreground mt-2 font-mono">10 MINS AGO</p>
+            <div className="divide-y divide-border max-h-[350px] overflow-y-auto">
+               <div className={`p-4 hover:bg-secondary/30 transition-colors cursor-pointer flex gap-4 items-start ${unreadCount > 0 ? "bg-indigo/5" : ""}`}>
+                 <div className="w-8 h-8 rounded-full bg-indigo/10 text-indigo flex items-center justify-center shrink-0 mt-1">
+                   <AlertTriangle className="w-4 h-4" />
+                 </div>
+                 <div className="flex-1">
+                   <div className="flex items-center justify-between">
+                     <p className="text-sm font-bold text-foreground">New Regulatory Update</p>
+                     {unreadCount > 0 && <div className="w-2 h-2 rounded-full bg-indigo shrink-0" />}
                    </div>
+                   <p className="text-xs text-muted-foreground mt-1">RBI KYC Master Direction amendment requires your immediate attention regarding V-CIP procedures.</p>
+                   <p className="text-[10px] text-indigo mt-2 font-mono font-bold">10 MINS AGO</p>
                  </div>
                </div>
-               <div className="p-4 hover:bg-secondary/30 transition-colors cursor-pointer">
-                 <div className="flex gap-3">
-                   <div className="w-2 h-2 rounded-full bg-transparent mt-1.5 shrink-0" />
-                   <div>
-                     <p className="text-sm font-medium">Action Assigned to You</p>
-                     <p className="text-xs text-muted-foreground mt-1">Update customer verification procedure (ACT-2041).</p>
-                     <p className="text-[10px] text-muted-foreground mt-2 font-mono">2 HOURS AGO</p>
+               
+               <div className={`p-4 hover:bg-secondary/30 transition-colors cursor-pointer flex gap-4 items-start ${unreadCount > 1 ? "bg-indigo/5" : ""}`}>
+                 <div className="w-8 h-8 rounded-full bg-red/10 text-red flex items-center justify-center shrink-0 mt-1">
+                   <Shield className="w-4 h-4" />
+                 </div>
+                 <div className="flex-1">
+                   <div className="flex items-center justify-between">
+                     <p className="text-sm font-bold text-foreground">Policy Gap Detected</p>
+                     {unreadCount > 1 && <div className="w-2 h-2 rounded-full bg-indigo shrink-0" />}
                    </div>
+                   <p className="text-xs text-muted-foreground mt-1">Automated analysis found a new gap in 'Customer Onboarding Policy v2.1'.</p>
+                   <p className="text-[10px] text-muted-foreground mt-2 font-mono font-bold">1 HOUR AGO</p>
                  </div>
                </div>
+
+               <div className={`p-4 hover:bg-secondary/30 transition-colors cursor-pointer flex gap-4 items-start ${unreadCount > 2 ? "bg-indigo/5" : ""}`}>
+                 <div className="w-8 h-8 rounded-full bg-teal/10 text-teal flex items-center justify-center shrink-0 mt-1">
+                   <FileCheck className="w-4 h-4" />
+                 </div>
+                 <div className="flex-1">
+                   <div className="flex items-center justify-between">
+                     <p className="text-sm font-bold text-foreground">Action Assigned</p>
+                     {unreadCount > 2 && <div className="w-2 h-2 rounded-full bg-indigo shrink-0" />}
+                   </div>
+                   <p className="text-xs text-muted-foreground mt-1">You have been assigned to update the customer verification procedure (ACT-2041).</p>
+                   <p className="text-[10px] text-muted-foreground mt-2 font-mono font-bold">2 HOURS AGO</p>
+                 </div>
+               </div>
+            </div>
+            <div className="p-3 border-t border-border bg-secondary/20 text-center">
+              <button className="text-xs font-bold text-foreground hover:text-indigo transition-colors w-full">
+                View all notifications
+              </button>
             </div>
           </PopoverContent>
         </Popover>

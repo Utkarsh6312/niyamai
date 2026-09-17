@@ -92,9 +92,9 @@ export default function ObligationExplorer() {
       </div>
 
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-serif text-3xl font-bold tracking-tight mb-2">Obligations Explorer</h1>
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight mb-2">Obligations Explorer</h1>
           <p className="text-muted-foreground text-sm">Explore, search, and analyze your regulatory obligations across all applicable regulations.</p>
         </div>
         <div className="flex items-center gap-3">
@@ -108,7 +108,7 @@ export default function ObligationExplorer() {
       </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] flex items-center gap-3 p-4">
           <div className="w-10 h-10 rounded-lg bg-indigo/10 flex items-center justify-center shrink-0">
             <FileText className="w-5 h-5 text-indigo" />
@@ -163,7 +163,7 @@ export default function ObligationExplorer() {
         <div className={`flex-1 flex flex-col min-w-0 space-y-4 ${selectedObId ? "hidden lg:flex" : ""}`}>
           
           {/* Filters */}
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <div className="flex-1 relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input type="text" placeholder="Search obligations..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 bg-background border border-border rounded text-sm outline-none focus:border-indigo" />

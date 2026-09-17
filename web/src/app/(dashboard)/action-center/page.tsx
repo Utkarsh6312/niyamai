@@ -79,12 +79,12 @@ export default function ActionCenter() {
           <span className="text-foreground">Action Center</span>
         </div>
 
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="font-serif text-3xl font-bold tracking-tight">Compliance Action Center</h1>
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight">Compliance Action Center</h1>
             <p className="text-muted-foreground mt-1 text-base">Convert regulatory findings into accountable implementation tasks.</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto flex-wrap">
             <button className="flex items-center gap-2 px-4 py-2 bg-background border border-indigo text-indigo rounded-md text-sm font-semibold hover:bg-indigo/5 transition-colors">
               <Columns className="w-4 h-4" /> View Kanban
             </button>
@@ -95,7 +95,7 @@ export default function ActionCenter() {
         </div>
 
         {/* Metrics Cards */}
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           <MetricCard
             icon={<CheckCircle2 className="w-5 h-5 text-indigo" />} iconBg="bg-indigo/10 border border-indigo/20"
             value="63" label="Open Actions" trend="8%" isPositive={true} />
@@ -212,7 +212,7 @@ export default function ActionCenter() {
           </div>
 
           {/* Pagination */}
-          <div className="p-4 border-t border-border flex items-center justify-between text-sm text-muted-foreground">
+          <div className="p-4 border-t border-border flex flex-col sm:flex-row gap-3 items-center justify-between text-sm text-muted-foreground">
             <div>Showing {actions.length} action{actions.length !== 1 ? "s" : ""} from RBI KYC Guidelines</div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1 border border-border rounded bg-background p-1">
@@ -242,7 +242,7 @@ export default function ActionCenter() {
           <div className="fixed inset-0 z-40 bg-black/10 backdrop-blur-[1px]" onClick={closePanel} />
 
           {/* Panel */}
-          <div className="fixed top-0 right-0 z-50 h-full w-[420px] bg-card border-l border-border shadow-xl flex flex-col">
+          <div className="fixed top-0 right-0 z-50 h-full w-full sm:w-[420px] max-w-full bg-card border-l border-border shadow-xl flex flex-col">
             {/* Header */}
             <div className="px-6 py-4 flex items-center justify-between border-b border-border shrink-0">
               <h2 className="font-serif text-lg font-bold">Action Details</h2>
@@ -283,7 +283,7 @@ export default function ActionCenter() {
                 </div>
 
                 {/* Detail Grid */}
-                <div className="grid grid-cols-[140px_1fr] gap-y-4 gap-x-4 text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-y-4 gap-x-4 text-sm">
                   <div className="text-muted-foreground">Source Regulation</div>
                   <div>
                     <div className="flex items-center gap-2 font-medium">

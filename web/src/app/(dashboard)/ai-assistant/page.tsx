@@ -214,7 +214,7 @@ export default function AIAssistant() {
     }
   };
 return (
-    <div className="flex h-full gap-5 text-[#0F172A] pb-10">
+    <div className="flex flex-col xl:flex-row h-full gap-5 text-[#0F172A] pb-10">
       
       {/* Left: Main Dashboard Area */}
       <div className="flex-1 flex flex-col space-y-5 min-w-0 overflow-y-auto pr-1 custom-scrollbar">
@@ -227,7 +227,7 @@ return (
         </div>
 
         {/* Header */}
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-1">
               <h1 className="text-3xl font-bold tracking-tight">AI Compliance Assistant</h1>
@@ -246,7 +246,7 @@ return (
         </div>
 
         {/* Prompt Suggestions */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <button onClick={() => handleSend(`Summarize RBI KYC Amendment 2026`)} className="bg-white border border-slate-200 rounded-lg p-3 flex items-center gap-3 hover:border-[#2563EB] hover:shadow-sm transition-all text-left group">
             <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
               <FileText className="w-5 h-5 text-[#2563EB]" />
@@ -274,7 +274,7 @@ return (
         </div>
 
         {/* Main Content Split */}
-        <div className="flex gap-5 items-start">
+        <div className="flex flex-col lg:flex-row gap-5 items-start">
           
           {/* Document & Highlights (Left) */}
           <div className="flex-1 space-y-5">
@@ -292,7 +292,7 @@ return (
               </div>
 
               {/* Tabs */}
-              <div className="flex border-b border-slate-200 px-2">
+              <div className="flex border-b border-slate-200 px-2 overflow-x-auto whitespace-nowrap custom-scrollbar">
                 <button className="px-4 py-3 text-sm font-bold border-b-2 border-[#2563EB] text-[#2563EB]">Summary</button>
                 <button className="px-4 py-3 text-sm font-medium text-slate-500 hover:text-slate-800">Key Changes</button>
                 <button className="px-4 py-3 text-sm font-medium text-slate-500 hover:text-slate-800">Obligations (38)</button>
@@ -364,7 +364,7 @@ return (
           </div>
 
           {/* Details & Insights (Right Main) */}
-          <div className="w-[320px] shrink-0 space-y-5">
+          <div className="w-full lg:w-[320px] shrink-0 space-y-5">
             
             {/* Regulation Details */}
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5">
@@ -473,7 +473,7 @@ return (
       </div>
 
       {/* Rightmost: Chat Panel */}
-      <div className="w-[360px] shrink-0 bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col overflow-hidden h-full">
+      <div className="w-full xl:w-[360px] shrink-0 bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col overflow-hidden h-full">
         
         {/* Chat Header */}
         <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-white">

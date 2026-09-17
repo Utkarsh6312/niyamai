@@ -73,9 +73,9 @@ export default function Users() {
       </div>
 
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-serif text-4xl font-bold tracking-tight mb-2">Users &amp; Roles</h1>
+          <h1 className="font-serif text-2xl sm:text-4xl font-bold tracking-tight mb-2">Users &amp; Roles</h1>
           <p className="text-muted-foreground text-sm">Manage user access, roles, and permissions for your organization.</p>
         </div>
         <div className="flex items-center gap-3">
@@ -89,7 +89,7 @@ export default function Users() {
       </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  p-4  flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-indigo/10 flex items-center justify-center shrink-0">
             <UsersIcon className="w-5 h-5 text-indigo" />
@@ -142,11 +142,11 @@ export default function Users() {
       </div>
 
       {/* Main Content */}
-      <div className="flex gap-6 flex-1 min-h-0">
+      <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-0">
         {/* Left: Table */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* Tabs */}
-          <div className="flex gap-0 border-b border-border mb-4">
+          <div className="flex gap-0 border-b border-border mb-4 overflow-x-auto whitespace-nowrap">
             <button className="px-4 py-2.5 text-sm font-medium border-b-2 border-indigo text-indigo">Users</button>
             <button className="px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Roles</button>
             <button className="px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Permission Matrix</button>
@@ -154,7 +154,7 @@ export default function Users() {
           </div>
 
           {/* Filters */}
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-4 flex-wrap">
             <div className="flex-1 relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input type="text" placeholder="Search users by name, email, or department..." className="w-full pl-9 pr-4 py-2 bg-card border border-border rounded text-sm outline-none focus:border-indigo" />
@@ -222,7 +222,7 @@ export default function Users() {
             </div>
 
             {/* Pagination */}
-            <div className="px-4 py-3 border-t border-border flex items-center justify-between text-sm">
+            <div className="px-4 py-3 border-t border-border flex flex-col sm:flex-row gap-3 items-center justify-between text-sm">
               <span className="text-muted-foreground text-xs">Showing 1–10 of 42 users</span>
               <div className="flex items-center gap-1">
                 <button className="w-8 h-8 rounded flex items-center justify-center text-muted-foreground hover:bg-secondary transition-colors"><ChevronLeft className="w-4 h-4" /></button>
@@ -244,7 +244,7 @@ export default function Users() {
         </div>
 
         {/* Right: User Detail Panel */}
-        <div className="w-[320px] shrink-0 bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]   flex flex-col overflow-y-auto">
+        <div className="w-full lg:w-[320px] shrink-0 bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]   flex flex-col overflow-y-auto">
           {/* User header */}
           <div className="p-5 border-b border-border flex items-start gap-3">
             <div className="w-12 h-12 rounded-full bg-indigo/10 text-indigo flex items-center justify-center font-bold text-sm shrink-0 border-2 border-indigo/30">

@@ -54,7 +54,7 @@ export default function Settings() {
       </div>
 
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-serif text-3xl font-bold tracking-tight mb-2">Settings</h1>
           <p className="text-muted-foreground text-sm">Configure your workspace, preferences, and system settings.</p>
@@ -64,9 +64,9 @@ export default function Settings() {
         </button>
       </div>
 
-      <div className="flex gap-6 items-start">
+      <div className="flex flex-col xl:flex-row gap-6 items-start">
         {/* Left Nav */}
-        <div className="w-72 shrink-0 bg-white border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] overflow-hidden py-2">
+        <div className="w-full xl:w-72 shrink-0 bg-white border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] overflow-hidden py-2">
           {sidebarNav.map((item) => (
             <div 
               key={item.name} 
@@ -94,7 +94,7 @@ export default function Settings() {
             <p className="text-sm text-slate-500 mb-6">Manage your organization's basic information and preferences.</p>
 
             <h3 className="text-sm font-bold text-[#0F172A] mb-4">Organization Information</h3>
-            <div className="grid grid-cols-2 gap-5 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-8">
               <div>
                 <label className="block text-sm text-slate-600 mb-1.5">Organization Name</label>
                 <input type="text" defaultValue="Aarohan Bank" className="w-full border border-border rounded-md px-3 py-2 text-sm text-[#0F172A] focus:outline-none focus:ring-1 focus:ring-blue-500" />
@@ -120,7 +120,7 @@ export default function Settings() {
             </div>
 
             <h3 className="text-sm font-bold text-[#0F172A] mb-4 border-t border-slate-100 pt-6">Workspace Preferences</h3>
-            <div className="grid grid-cols-2 gap-5 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-8">
               <div>
                 <label className="block text-sm text-slate-600 mb-1.5">Default Landing Page</label>
                 <select className="w-full border border-border rounded-md px-3 py-2 text-sm text-[#0F172A] focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none bg-white">
@@ -223,7 +223,7 @@ export default function Settings() {
         </div>
 
         {/* Right Sidebar */}
-        <div className="w-[320px] shrink-0 space-y-6">
+        <div className="w-full xl:w-[320px] shrink-0 space-y-6">
           
           {/* Workspace Summary */}
           <div className="bg-white border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] overflow-hidden">

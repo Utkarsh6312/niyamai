@@ -16,7 +16,7 @@ export default function Profile() {
         <span className="text-foreground">My Profile</span>
       </div>
 
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-serif text-3xl font-bold tracking-tight">My Profile</h1>
           <p className="text-muted-foreground mt-1 text-base">View and manage your personal information, role, and preferences.</p>
@@ -29,8 +29,8 @@ export default function Profile() {
         </button>
       </div>
 
-      <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  p-6  flex gap-8">
-        <div className="flex flex-col items-center justify-center shrink-0 w-48 border-r border-border pr-8">
+      <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-4 sm:p-6 flex flex-col sm:flex-row gap-6 sm:gap-8">
+        <div className="flex flex-col items-center justify-center shrink-0 w-full sm:w-48 border-r-0 sm:border-r border-b sm:border-b-0 pb-6 sm:pb-0 pr-0 sm:pr-8">
           <div className="relative mb-4">
             <div className="w-24 h-24 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-3xl font-bold">AS</div>
             <div className="absolute bottom-0 right-0 p-1.5 bg-indigo text-white rounded-full border-2 border-card cursor-pointer"><Camera className="w-3 h-3" /></div>
@@ -43,7 +43,7 @@ export default function Profile() {
           </div>
         </div>
 
-        <div className="flex-1 grid grid-cols-2 gap-y-6">
+        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-y-6">
           <div className="flex items-start gap-3">
              <Mail className="w-4 h-4 text-muted-foreground mt-0.5" />
              <div>
@@ -75,7 +75,7 @@ export default function Profile() {
         </div>
       </div>
 
-      <div className="flex gap-6 font-medium text-sm border-b border-border">
+      <div className="flex gap-4 sm:gap-6 font-medium text-sm border-b border-border overflow-x-auto whitespace-nowrap">
          <div className="text-indigo border-b-2 border-indigo pb-3">Profile Information</div>
          <div className="text-muted-foreground hover:text-foreground pb-3 cursor-pointer">Preferences</div>
          <div className="text-muted-foreground hover:text-foreground pb-3 cursor-pointer">Security & Sessions</div>
@@ -83,11 +83,11 @@ export default function Profile() {
          <div className="text-muted-foreground hover:text-foreground pb-3 cursor-pointer">Activity</div>
       </div>
 
-      <div className="flex gap-6 items-start">
+      <div className="flex flex-col lg:flex-row gap-6 items-start">
         <div className="flex-1 bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  p-6 ">
            <h3 className="text-lg font-bold mb-6">Personal Information</h3>
            
-           <div className="grid grid-cols-2 gap-6 mb-6">
+           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6">
               <div className="space-y-1.5">
                  <label className="text-xs text-muted-foreground font-medium">Full Name</label>
                  <input type="text" className="w-full border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:border-indigo" defaultValue="Aarav Sharma" />
@@ -126,7 +126,7 @@ export default function Profile() {
            </div>
         </div>
 
-        <div className="w-[320px] shrink-0 space-y-6">
+        <div className="w-full lg:w-[320px] shrink-0 space-y-6">
            <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  p-6 ">
               <div className="flex justify-between items-center mb-6">
                  <h3 className="font-bold flex items-center gap-2"><Shield className="w-4 h-4 text-indigo" /> Role & Access</h3>

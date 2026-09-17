@@ -192,7 +192,7 @@ export default function AuditTrail() {
   const totalLive = liveEvents.length;
 
   return (
-    <div className="space-y-6 flex flex-col min-h-[calc(100vh-3rem)] bg-analytical text-foreground -m-6 p-6">
+    <div className="space-y-6 flex flex-col min-h-[calc(100vh-3rem)] bg-analytical text-foreground -m-4 sm:-m-6 p-4 sm:p-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Link href="/" className="hover:text-indigo transition-colors">Home</Link>
@@ -203,7 +203,7 @@ export default function AuditTrail() {
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-serif text-3xl font-bold tracking-tight text-primary-dark">Audit Trail</h1>
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-primary-dark">Audit Trail</h1>
           <p className="text-muted-foreground mt-2 text-base">Complete traceability of regulatory intelligence, analysis and actions.</p>
         </div>
         <div className="flex items-center gap-3">
@@ -260,7 +260,7 @@ export default function AuditTrail() {
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-[600px] xl:min-h-[800px]">
+      <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-0">
         
         {/* Left Sidebar Filters */}
         <div className="w-full lg:w-64 shrink-0 flex flex-col space-y-6">
@@ -401,7 +401,7 @@ export default function AuditTrail() {
             )}
           </div>
           
-          <div className="p-4 border-t border-border flex items-center justify-between shrink-0 bg-card">
+          <div className="p-4 border-t border-border flex flex-col sm:flex-row items-center justify-between shrink-0 bg-card gap-3">
             <span className="text-sm text-muted-foreground font-medium">
               Showing {startIndex + 1}–{Math.min(startIndex + itemsPerPage, sortedEvents.length)} of {allEvents.length} events
             </span>
@@ -477,19 +477,19 @@ export default function AuditTrail() {
               </div>
 
               <div className="space-y-4">
-                <div className="grid grid-cols-[130px_1fr] gap-x-2 border-b border-border pb-3">
+                <div className="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-2 border-b border-border pb-3">
                   <span className="text-sm text-muted-foreground">Event ID</span>
                   <span className="text-sm font-medium text-primary-dark font-mono">{selectedEvent.id}</span>
                 </div>
-                <div className="grid grid-cols-[130px_1fr] gap-x-2 border-b border-border pb-3">
+                <div className="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-2 border-b border-border pb-3">
                   <span className="text-sm text-muted-foreground">Timestamp</span>
                   <span className="text-sm font-medium text-primary-dark">{selectedEvent.date}, {selectedEvent.time}</span>
                 </div>
-                <div className="grid grid-cols-[130px_1fr] gap-x-2 border-b border-border pb-3">
+                <div className="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-2 border-b border-border pb-3">
                   <span className="text-sm text-muted-foreground">Owner / User</span>
                   <span className="text-sm font-medium text-primary-dark">{selectedEvent.actor.name}{selectedEvent.actor.dept ? ` (${selectedEvent.actor.dept})` : ""}</span>
                 </div>
-                <div className="grid grid-cols-[130px_1fr] gap-x-2 border-b border-border pb-3">
+                <div className="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-2 border-b border-border pb-3">
                   <span className="text-sm text-muted-foreground">Status</span>
                   <div>
                     <span className={`px-2 py-0.5 rounded-md text-xs font-bold ${selectedEvent.status.color}`}>
@@ -498,25 +498,25 @@ export default function AuditTrail() {
                   </div>
                 </div>
                 {selectedEvent.actionId && (
-                  <div className="grid grid-cols-[130px_1fr] gap-x-2 border-b border-border pb-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-2 border-b border-border pb-3">
                     <span className="text-sm text-muted-foreground">Action ID</span>
                     <Link href="/action-center" className="text-sm font-semibold text-indigo hover:underline">{selectedEvent.actionId}</Link>
                   </div>
                 )}
                 {selectedEvent.regulation && (
-                  <div className="grid grid-cols-[130px_1fr] gap-x-2 border-b border-border pb-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-2 border-b border-border pb-3">
                     <span className="text-sm text-muted-foreground">Source Regulation</span>
                     <span className="text-sm font-medium text-primary-dark">{selectedEvent.regulation}</span>
                   </div>
                 )}
                 {selectedEvent.department && (
-                  <div className="grid grid-cols-[130px_1fr] gap-x-2 border-b border-border pb-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-2 border-b border-border pb-3">
                     <span className="text-sm text-muted-foreground">Department</span>
                     <span className="text-sm font-medium text-primary-dark">{selectedEvent.department}</span>
                   </div>
                 )}
                 {selectedEvent.priority && (
-                  <div className="grid grid-cols-[130px_1fr] gap-x-2 border-b border-border pb-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-2 border-b border-border pb-3">
                     <span className="text-sm text-muted-foreground">Priority</span>
                     <span className={`text-sm font-bold ${
                       selectedEvent.priority === "Critical" ? "text-red" :
@@ -525,7 +525,7 @@ export default function AuditTrail() {
                     }`}>{selectedEvent.priority}</span>
                   </div>
                 )}
-                <div className="grid grid-cols-[130px_1fr] gap-x-2 border-b border-border pb-3">
+                <div className="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-x-2 border-b border-border pb-3">
                   <span className="text-sm text-muted-foreground">Details</span>
                   <span className="text-sm text-primary-dark leading-relaxed">{selectedEvent.details}</span>
                 </div>
@@ -557,7 +557,7 @@ export default function AuditTrail() {
               </div>
             </div>
 
-            <div className="p-4 border-t border-border bg-card shrink-0 grid grid-cols-2 gap-3">
+            <div className="p-4 border-t border-border bg-card shrink-0 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
               <Link href="/action-center" className="py-2.5 px-4 text-indigo text-sm font-semibold border border-indigo/30 rounded-md hover:bg-indigo/5 transition-colors text-center shadow-sm">
                 View in Action Center
               </Link>

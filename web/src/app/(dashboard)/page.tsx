@@ -302,7 +302,7 @@ export default function Home() {
               <ShieldCheck className="w-3 h-3" /> Core Compliance v3.4 Active
             </span>
           </div>
-          <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight">Policy & Regulatory Overview</h1>
+          <h1 className="font-serif text-2xl sm:text-3xl sm:text-4xl font-bold tracking-tight">Policy & Regulatory Overview</h1>
           <p className="text-muted-foreground text-sm mt-0.5">
             Real-time telemetry on statutory circulars, policy deltas, and accountable remediation tasks across Aarohan Bank.
           </p>
@@ -427,7 +427,7 @@ export default function Home() {
             </div>
 
             {/* Enlarged Chart Area */}
-            <div className="h-[400px] p-6">
+            <div className="h-[280px] sm:h-[350px] md:h-[400px] p-3 sm:p-6">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={currentData.trend} margin={{ top: 10, right: 20, left: -15, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#88888825" />
@@ -490,7 +490,7 @@ export default function Home() {
 
           {/* Recent Statutory Changes Table */}
           <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]">
-            <div className="p-5 border-b border-border flex justify-between items-center bg-secondary/10">
+            <div className="p-5 border-b border-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-secondary/10">
               <div>
                 <h2 className="font-serif text-lg font-bold">Recent Statutory Directives (Aarohan Bank)</h2>
                 <p className="text-xs text-muted-foreground">Directly ingested from Reserve Bank of India notifications.</p>
@@ -645,7 +645,7 @@ export default function Home() {
 
                 return (
                   <div key={dept.name} className="flex items-center text-xs">
-                    <div className="w-32 text-foreground font-semibold truncate pr-2" title={dept.name}>
+                    <div className="w-24 sm:w-32 text-foreground font-semibold truncate pr-2" title={dept.name}>
                       {dept.name}
                     </div>
                     <div className="flex-1 flex items-center h-3 bg-secondary/30 rounded-none overflow-hidden border border-black/20">

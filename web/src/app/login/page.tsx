@@ -1,9 +1,49 @@
 "use client";
 
-import { ArrowRight, Building2, EyeOff, Globe, Lock, Mail, ShieldCheck, FileText, Search, BarChart3, Zap } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { api } from "@/lib/api/client";
+
+import { ArrowRight, Building2, Eye, EyeOff, Globe, Lock, Mail, ShieldCheck, FileText, Search, BarChart3, Zap } from "lucide-react";
 import Link from "next/link";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("aarav.sharma@aarohanbank.com");
+  const [password, setPassword] = useState("password123");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      // Create login endpoint manually since client.ts doesnt have it
+      const res = await fetch("http://localhost:8000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (!res.ok) {
+        throw new Error("Invalid credentials");
+      }
+      
+      const data = await res.json();
+      // Store in localStorage for prototype auth persistence
+      localStorage.setItem("user", JSON.stringify(data));
+      
+      // Redirect to dashboard
+      router.push("/");
+    } catch (err: any) {
+      setError(err.message || "Failed to log in");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="flex w-full h-screen bg-white">
       {/* Left Pane - Branding & Value Prop */}
@@ -124,14 +164,16 @@ export default function LoginPage() {
              <h2 className="text-[28px] font-bold text-[#0f172a] mb-2 tracking-tight">Welcome back</h2>
              <p className="text-slate-500 mb-8 text-[15px]">Sign in to your NIYAMAI workspace.</p>
 
-             <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+             {error && <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm mb-4 border border-red-100">{error}</div>}
+             <form className="space-y-5" onSubmit={handleLogin}>
                 <div className="space-y-1.5">
                    <label className="text-[13px] font-semibold text-slate-700">Work Email</label>
                    <div className="relative">
                       <Mail className="w-[18px] h-[18px] absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                       <input 
                          type="email" 
-                         defaultValue="aarav.sharma@aarohanbank.com"
+                         value={email}
+                         onChange={(e) => setEmail(e.target.value)}
                          className="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-xl text-[14px] font-medium text-slate-900 bg-[#f8fafc] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all placeholder:text-slate-400"
                       />
                    </div>
@@ -142,12 +184,13 @@ export default function LoginPage() {
                    <div className="relative">
                       <Lock className="w-[18px] h-[18px] absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                       <input 
-                         type="password" 
-                         defaultValue="password123"
+                         type={showPassword ? "text" : "password"} 
+                         value={password}
+                         onChange={(e) => setPassword(e.target.value)}
                          className="w-full pl-11 pr-11 py-3 border border-slate-200 rounded-xl text-[14px] font-medium text-slate-900 bg-[#f8fafc] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all tracking-[0.2em]"
                       />
-                      <button type="button" className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
-                         <EyeOff className="w-[18px] h-[18px]" />
+                      <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                         {showPassword ? <Eye className="w-[18px] h-[18px]" /> : <EyeOff className="w-[18px] h-[18px]" />}
                       </button>
                    </div>
                 </div>
@@ -165,11 +208,11 @@ export default function LoginPage() {
                    <a href="#" className="text-[13px] font-semibold text-[#0f5ff9] hover:underline">Forgot password?</a>
                 </div>
 
-                <Link href="/" className="block mt-2">
-                   <button type="button" className="w-full py-3 bg-[#0f5ff9] hover:bg-blue-700 text-white rounded-xl font-semibold text-[14px] flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow">
-                      Sign In <ArrowRight className="w-4 h-4" />
+                <div className="block mt-2">
+                   <button type="submit" disabled={loading} className="w-full py-3 bg-[#0f5ff9] hover:bg-blue-700 text-white rounded-xl font-semibold text-[14px] flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow disabled:opacity-50">
+                      {loading ? "Signing in..." : "Sign In"} <ArrowRight className="w-4 h-4" />
                    </button>
-                </Link>
+                </div>
 
                 <div className="relative py-4">
                    <div className="absolute inset-0 flex items-center">

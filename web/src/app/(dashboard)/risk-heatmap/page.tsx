@@ -90,9 +90,9 @@ export default function RiskHeatmap() {
       </div>
 
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-serif text-4xl font-bold tracking-tight mb-2">Risk &amp; Impact Center</h1>
+          <h1 className="font-serif text-2xl sm:text-4xl font-bold tracking-tight mb-2">Risk &amp; Impact Center</h1>
           <p className="text-muted-foreground text-sm">Understand organizational exposure and prioritize compliance actions.</p>
         </div>
         <div className="flex items-center gap-3">
@@ -109,7 +109,7 @@ export default function RiskHeatmap() {
       </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  p-5  flex items-center gap-4">
           <div className="w-12 h-12 rounded-lg bg-indigo/10 flex items-center justify-center shrink-0">
             <ShieldAlert className="w-6 h-6 text-indigo" />
@@ -173,7 +173,7 @@ export default function RiskHeatmap() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* LEFT COLUMN (2/3) */}
         <div className="col-span-2 space-y-6">
 
@@ -184,7 +184,7 @@ export default function RiskHeatmap() {
                 <h2 className="font-serif text-lg font-bold">Organizational Risk Map</h2>
                 <p className="text-sm text-muted-foreground mt-0.5">Department-wise regulatory impact and risk exposure.</p>
               </div>
-              <div className="flex items-center gap-5 text-xs">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs">
                 <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-red" /> Critical</div>
                 <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-orange-500" /> High</div>
                 <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-yellow-500" /> Medium</div>
@@ -260,7 +260,7 @@ export default function RiskHeatmap() {
               <h2 className="font-serif text-lg font-bold">Risk Heatmap</h2>
               <p className="text-sm text-muted-foreground mt-0.5">Regulatory risk distribution by likelihood and impact.</p>
             </div>
-            <div className="flex">
+            <div className="flex flex-col sm:flex-row">
               {/* Scatter chart area */}
               <div className="flex-1 p-5 relative">
                 <div className="flex">
@@ -308,7 +308,7 @@ export default function RiskHeatmap() {
               </div>
 
               {/* Risk summary sidebar */}
-              <div className="w-48 border-l border-border p-4 flex flex-col justify-center space-y-3">
+              <div className="w-full sm:w-48 border-t sm:border-t-0 sm:border-l border-border p-4 flex flex-col justify-center space-y-3">
                 {riskSummary.map((item) => (
                   <div key={item.label} className="flex items-center justify-between py-2 hover:bg-secondary/20 rounded px-2 cursor-pointer transition-colors group">
                     <div className="flex items-center gap-2">

@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
 from app.database import init_db
-from app.routers import dashboard, regulations, obligations, policies, mappings, risks, actions, provenance, ingestion, feed
+from app.routers import auth, dashboard, regulations, obligations, policies, mappings, risks, actions, provenance, ingestion, feed
 
 settings = get_settings()
 
@@ -26,6 +26,7 @@ app.add_middleware(
 )
 
 # Register routers
+app.include_router(auth.router, prefix="/api")
 app.include_router(dashboard.router, prefix="/api")
 app.include_router(regulations.router, prefix="/api")
 app.include_router(obligations.router, prefix="/api")
