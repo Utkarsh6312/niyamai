@@ -102,7 +102,7 @@ export default function RiskHeatmap() {
             <option>Last 90 days</option>
             <option>This Year</option>
           </select>
-          <button onClick={() => toast.success("Exporting Risk Report to PDF...")} className="flex items-center gap-2 bg-indigo hover:bg-indigo/90 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
+          <button onClick={() => { toast.success("Preparing PDF..."); setTimeout(() => window.print(), 500); }} className="flex items-center gap-2 bg-indigo hover:bg-indigo/90 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
             <Download className="w-4 h-4" /> Export Report
           </button>
         </div>

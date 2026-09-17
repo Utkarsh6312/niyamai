@@ -17,7 +17,8 @@ import "@xyflow/react/dist/style.css";
 import { FileText, ShieldAlert, CheckCircle, Activity, Building, AlertTriangle, Scale } from "lucide-react";
 
 // Custom Node Types
-const BaseNode = ({ data, type, icon: Icon, colorClass, borderClass }: any) => (
+type NodeProps = { data: { label: string; sub?: string }, type?: string, icon?: any, colorClass?: string, borderClass?: string, [key: string]: unknown };
+const BaseNode = ({ data, type, icon: Icon, colorClass, borderClass }: NodeProps) => (
   <div className={`px-4 py-3 shadow-lg rounded-md bg-card border-2 ${borderClass} min-w-[200px]`}>
     <Handle type="target" position={Position.Top} className="w-2 h-2 rounded-full !bg-muted-foreground" />
     <div className="flex items-center gap-2 mb-2">
@@ -30,14 +31,14 @@ const BaseNode = ({ data, type, icon: Icon, colorClass, borderClass }: any) => (
   </div>
 );
 
-const RegulationNode = (props: any) => <BaseNode {...props} type="Regulation" icon={Scale} colorClass="bg-slate-100 text-slate-600" borderClass="border-slate-200" />;
-const ClauseNode = (props: any) => <BaseNode {...props} type="Clause" icon={FileText} colorClass="bg-slate-100 text-slate-600" borderClass="border-slate-200" />;
-const ObligationNode = (props: any) => <BaseNode {...props} type="Obligation" icon={FileText} colorClass="bg-indigo/10 text-indigo" borderClass="border-indigo/30" />;
-const PolicyNode = (props: any) => <BaseNode {...props} type="Internal Policy" icon={BookOpenIcon} colorClass="bg-teal/10 text-teal" borderClass="border-teal/30" />;
-const GapNode = (props: any) => <BaseNode {...props} type="Policy Gap" icon={ShieldAlert} colorClass="bg-amber/10 text-amber" borderClass="border-amber/40" />;
-const RiskNode = (props: any) => <BaseNode {...props} type="Risk Assessment" icon={AlertTriangle} colorClass="bg-red/10 text-red" borderClass="border-red/40" />;
-const DeptNode = (props: any) => <BaseNode {...props} type="Department" icon={Building} colorClass="bg-purple-100 text-purple-600" borderClass="border-purple-200" />;
-const ActionNode = (props: any) => <BaseNode {...props} type="Action" icon={Activity} colorClass="bg-blue-100 text-blue-600" borderClass="border-blue-300" />;
+const RegulationNode = (props: NodeProps) => <BaseNode {...props} type="Regulation" icon={Scale} colorClass="bg-slate-100 text-slate-600" borderClass="border-slate-200" />;
+const ClauseNode = (props: NodeProps) => <BaseNode {...props} type="Clause" icon={FileText} colorClass="bg-slate-100 text-slate-600" borderClass="border-slate-200" />;
+const ObligationNode = (props: NodeProps) => <BaseNode {...props} type="Obligation" icon={FileText} colorClass="bg-indigo/10 text-indigo" borderClass="border-indigo/30" />;
+const PolicyNode = (props: NodeProps) => <BaseNode {...props} type="Internal Policy" icon={BookOpenIcon} colorClass="bg-teal/10 text-teal" borderClass="border-teal/30" />;
+const GapNode = (props: NodeProps) => <BaseNode {...props} type="Policy Gap" icon={ShieldAlert} colorClass="bg-amber/10 text-amber" borderClass="border-amber/40" />;
+const RiskNode = (props: NodeProps) => <BaseNode {...props} type="Risk Assessment" icon={AlertTriangle} colorClass="bg-red/10 text-red" borderClass="border-red/40" />;
+const DeptNode = (props: NodeProps) => <BaseNode {...props} type="Department" icon={Building} colorClass="bg-purple-100 text-purple-600" borderClass="border-purple-200" />;
+const ActionNode = (props: NodeProps) => <BaseNode {...props} type="Action" icon={Activity} colorClass="bg-blue-100 text-blue-600" borderClass="border-blue-300" />;
 
 const nodeTypes = {
   regulation: RegulationNode,
@@ -96,13 +97,13 @@ function getLayoutedElements(nodes: Node[], edges: Edge[]) {
   return { nodes: centeredNodes, edges };
 }
 
-export function TraceGraph({ initialNodes = [], initialEdges = [] }: { initialNodes: any[], initialEdges: any[] }) {
+export function TraceGraph({ initialNodes = [], initialEdges = [] }: { initialNodes: unknown[], initialEdges: unknown[] }) {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
   useEffect(() => {
     if (initialNodes.length > 0) {
-      const formattedEdges = initialEdges.map(e => ({ ...e, animated: true, style: { stroke: "#9ca3af", strokeWidth: 2 } }));
+      const formattedEdges = (initialEdges as Edge[]).map(e => ({ ...e, animated: true, style: { stroke: "#9ca3af", strokeWidth: 2 } }));
       const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(initialNodes as Node[], formattedEdges as Edge[]);
       setNodes(layoutedNodes);
       setEdges(layoutedEdges);
@@ -110,7 +111,7 @@ export function TraceGraph({ initialNodes = [], initialEdges = [] }: { initialNo
   }, [initialNodes, initialEdges, setNodes, setEdges]);
 
   const onConnect = useCallback(
-    (params: any) => setEdges((eds) => addEdge(params, eds)),
+    (params: unknown) => setEdges((eds) => addEdge(params as Edge, eds)),
     [setEdges],
   );
 
@@ -141,6 +142,6 @@ export function TraceGraph({ initialNodes = [], initialEdges = [] }: { initialNo
   );
 }
 
-function BookOpenIcon(props: any) {
+function BookOpenIcon(props: React.SVGProps<SVGSVGElement>) {
   return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
 }

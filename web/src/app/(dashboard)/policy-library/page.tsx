@@ -212,8 +212,33 @@ export default function PolicyLibrary() {
     toast.info("Auto-filled demo RBI circular data");
   };
 
+  const handleExportMetadata = () => {
+    if (!selectedDoc) return;
+    const blob = new Blob([JSON.stringify(selectedDoc, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${selectedDoc.code}_metadata.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Exported metadata for ${selectedDoc.code}`);
+  };
+
+  const handleDownloadPDF = () => {
+    if (!selectedDoc) return;
+    // Mock PDF download by creating a simple text file with the document name
+    const blob = new Blob([`Official PDF Copy of ${selectedDoc.title}\n\nCode: ${selectedDoc.code}\nSource: ${selectedDoc.source}`], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${selectedDoc.code}.txt`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Downloaded official copy of ${selectedDoc.code}`);
+  };
+
   return (
-    <div className="space-y-6 flex flex-col h-full min-h-[calc(100vh-8rem)]">
+    <div className="space-y-5 flex flex-col h-full text-foreground pb-10 min-h-[calc(100vh-8rem)]">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <Link href="/" className="hover:text-indigo">Home</Link>
@@ -430,10 +455,7 @@ export default function PolicyLibrary() {
                         </td>
                         <td className="px-4 py-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                           <button
-                            onClick={() => {
-                              setSelectedDocId(row.id);
-                              toast.info(`Viewing details for ${row.code}`);
-                            }}
+                            onClick={() => setSelectedDocId(row.id)}
                             className="p-1 rounded hover:bg-secondary"
                           >
                             <MoreVertical className="w-4 h-4 text-muted-foreground hover:text-indigo" />
@@ -472,7 +494,7 @@ export default function PolicyLibrary() {
                 <StatusBadge status={selectedDoc.status} />
                 <div className="ml-auto flex items-center gap-2 text-muted-foreground">
                   <button
-                    onClick={() => toast.info(`Exported metadata for ${selectedDoc.code}`)}
+                    onClick={handleExportMetadata}
                     className="w-6 h-6 flex items-center justify-center border border-border rounded hover:bg-secondary"
                   >
                     <MoreHorizontal className="w-4 h-4" />
@@ -552,7 +574,7 @@ export default function PolicyLibrary() {
                       Run Impact Analysis <ExternalLink className="w-3.5 h-3.5" />
                     </Link>
                     <button
-                      onClick={() => toast.success(`Downloaded official PDF copy of ${selectedDoc.code}`)}
+                      onClick={handleDownloadPDF}
                       className="px-3 py-2 border border-border text-foreground rounded flex items-center justify-center gap-1 text-xs font-semibold hover:bg-secondary"
                     >
                       <Download className="w-3.5 h-3.5" /> PDF

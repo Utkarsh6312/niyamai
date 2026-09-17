@@ -7,9 +7,26 @@ import {
   Headset, ExternalLink, ArrowRight, MoreVertical
 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export default function WorkspacesPage() {
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [newWorkspaceName, setNewWorkspaceName] = useState("");
+  const [newWorkspaceIndustry, setNewWorkspaceIndustry] = useState("");
+
+  const handleCreateWorkspace = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newWorkspaceName || !newWorkspaceIndustry) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+    toast.success(`Workspace "${newWorkspaceName}" created successfully!`);
+    setIsCreateOpen(false);
+    setNewWorkspaceName("");
+    setNewWorkspaceIndustry("");
+  };
+
   const workspaces = [
     {
       id: "aarohan-bank",
@@ -118,7 +135,7 @@ export default function WorkspacesPage() {
             <h1 className="font-serif text-3xl font-bold tracking-tight text-primary-dark">Enterprise Workspace</h1>
             <p className="text-muted-foreground mt-1">Select and manage your organization's regulatory workspace.</p>
           </div>
-          <button onClick={() => toast.info("Opening workspace creation flow...")} className="flex items-center gap-2 bg-indigo text-white px-4 py-2 rounded-md font-semibold text-sm hover:bg-indigo/90 transition-colors shadow-sm whitespace-nowrap">
+          <button onClick={() => setIsCreateOpen(true)} className="flex items-center gap-2 bg-indigo text-white px-4 py-2 rounded-md font-semibold text-sm hover:bg-indigo/90 transition-colors shadow-sm whitespace-nowrap">
             <Plus className="w-4 h-4" /> Create Workspace
           </button>
         </div>
@@ -376,6 +393,47 @@ export default function WorkspacesPage() {
         </div>
 
       </div>
+
+      {/* Workspace Creation Modal */}
+      {isCreateOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold font-serif mb-4">Create New Workspace</h2>
+            <form onSubmit={handleCreateWorkspace}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Workspace Name</label>
+                  <input 
+                    type="text" 
+                    value={newWorkspaceName}
+                    onChange={(e) => setNewWorkspaceName(e.target.value)}
+                    className="w-full border border-border px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-indigo" 
+                    placeholder="e.g., European Operations" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Industry</label>
+                  <input 
+                    type="text" 
+                    value={newWorkspaceIndustry}
+                    onChange={(e) => setNewWorkspaceIndustry(e.target.value)}
+                    className="w-full border border-border px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-indigo" 
+                    placeholder="e.g., Banking & Finance" 
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <button type="button" onClick={() => setIsCreateOpen(false)} className="px-4 py-2 text-sm font-medium border border-border rounded hover:bg-secondary transition-colors">
+                  Cancel
+                </button>
+                <button type="submit" className="px-4 py-2 text-sm font-medium bg-indigo text-white rounded hover:bg-indigo/90 transition-colors">
+                  Create Workspace
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

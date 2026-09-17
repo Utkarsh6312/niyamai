@@ -2,7 +2,7 @@
 
 import { Save, Settings as SettingsIcon, Bell, Database, Sparkles, Shield, Palette, Link as LinkIcon, FileText, Trash2, Info, Building, MapPin, Globe, Hash, Calendar, CheckCircle2, Download, RotateCcw, Key, HelpCircle, ExternalLink, Edit } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 const sidebarNav = [
@@ -24,6 +24,26 @@ export default function Settings() {
   const [enableVisibility, setEnableVisibility] = useState(true);
   const [enableBeta, setEnableBeta] = useState(false);
 
+  useEffect(() => {
+    const saved = localStorage.getItem('niyamai_settings');
+    if (saved) {
+      try {
+        const s = JSON.parse(saved);
+        if (s.enableAI !== undefined) setEnableAI(s.enableAI);
+        if (s.enableReminders !== undefined) setEnableReminders(s.enableReminders);
+        if (s.enableVisibility !== undefined) setEnableVisibility(s.enableVisibility);
+        if (s.enableBeta !== undefined) setEnableBeta(s.enableBeta);
+      } catch (e) {}
+    }
+  }, []);
+
+  const handleSave = () => {
+    localStorage.setItem('niyamai_settings', JSON.stringify({
+      enableAI, enableReminders, enableVisibility, enableBeta
+    }));
+    toast.success("Settings saved successfully");
+  };
+
   return (
     <div className="space-y-6 flex flex-col h-full text-foreground pb-10">
       {/* Breadcrumb */}
@@ -39,7 +59,7 @@ export default function Settings() {
           <h1 className="font-serif text-3xl font-bold tracking-tight mb-2">Settings</h1>
           <p className="text-muted-foreground text-sm">Configure your workspace, preferences, and system settings.</p>
         </div>
-        <button onClick={() => toast.success("Settings saved successfully")} className="flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors shadow-sm">
+        <button onClick={handleSave} className="flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors shadow-sm">
           <Save className="w-4 h-4" /> Save Changes
         </button>
       </div>

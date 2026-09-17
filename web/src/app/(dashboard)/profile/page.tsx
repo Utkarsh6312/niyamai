@@ -203,7 +203,7 @@ export default function Profile() {
   );
 }
 
-function BuildingIcon(props: any) {
+function BuildingIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>

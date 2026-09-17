@@ -31,6 +31,37 @@ const roleDistribution = [
 
 export default function Users() {
   const [selectedUser] = useState(users[0]);
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("Viewer");
+
+  const [isRoleOpen, setIsRoleOpen] = useState(false);
+  const [newRoleName, setNewRoleName] = useState("");
+  const [roleDesc, setRoleDesc] = useState("");
+
+  const handleInvite = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inviteEmail || !inviteEmail.includes('@')) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    toast.success(`Invitation sent to ${inviteEmail}!`);
+    setIsInviteOpen(false);
+    setInviteEmail("");
+    setInviteRole("Viewer");
+  };
+
+  const handleCreateRole = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newRoleName) {
+      toast.error("Please enter a role name");
+      return;
+    }
+    toast.success(`Role "${newRoleName}" created successfully!`);
+    setIsRoleOpen(false);
+    setNewRoleName("");
+    setRoleDesc("");
+  };
 
   return (
     <div className="space-y-5 flex flex-col h-full text-foreground pb-10">
@@ -48,10 +79,10 @@ export default function Users() {
           <p className="text-muted-foreground text-sm">Manage user access, roles, and permissions for your organization.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button onClick={() => toast.success("Invitation link generated!")} className="flex items-center gap-2 border border-indigo text-indigo px-4 py-2 rounded text-sm font-medium hover:bg-indigo/5 transition-colors">
+          <button onClick={() => setIsInviteOpen(true)} className="flex items-center gap-2 border border-indigo text-indigo px-4 py-2 rounded text-sm font-medium hover:bg-indigo/5 transition-colors">
             <UserPlus className="w-4 h-4" /> Invite User
           </button>
-          <button onClick={() => toast.info("Opening role builder...")} className="flex items-center gap-2 bg-indigo hover:bg-indigo/90 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
+          <button onClick={() => setIsRoleOpen(true)} className="flex items-center gap-2 bg-indigo hover:bg-indigo/90 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
             <ShieldPlus className="w-4 h-4" /> Create Role
           </button>
         </div>
@@ -325,6 +356,103 @@ export default function Users() {
           </div>
         </div>
       </div>
+
+
+      {/* Invite User Modal */}
+      {isInviteOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold font-serif mb-4 flex items-center gap-2"><UserPlus className="w-5 h-5 text-indigo"/> Invite User</h2>
+            <form onSubmit={handleInvite}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Email Address</label>
+                  <input 
+                    type="email" 
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    className="w-full border border-border px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-indigo" 
+                    placeholder="colleague@aarohan.com" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Role</label>
+                  <select 
+                    value={inviteRole}
+                    onChange={(e) => setInviteRole(e.target.value)}
+                    className="w-full border border-border px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-indigo" 
+                  >
+                    <option>Viewer</option>
+                    <option>Department User</option>
+                    <option>Risk Analyst</option>
+                    <option>Policy Manager</option>
+                    <option>Compliance Admin</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <button type="button" onClick={() => setIsInviteOpen(false)} className="px-4 py-2 text-sm font-medium border border-border rounded hover:bg-secondary transition-colors">
+                  Cancel
+                </button>
+                <button type="submit" className="px-4 py-2 text-sm font-medium bg-indigo text-white rounded hover:bg-indigo/90 transition-colors">
+                  Send Invitation
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Role Builder Modal */}
+      {isRoleOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-6 w-full max-w-lg">
+            <h2 className="text-xl font-bold font-serif mb-4 flex items-center gap-2"><ShieldPlus className="w-5 h-5 text-indigo"/> Create Custom Role</h2>
+            <form onSubmit={handleCreateRole}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Role Name</label>
+                  <input 
+                    type="text" 
+                    value={newRoleName}
+                    onChange={(e) => setNewRoleName(e.target.value)}
+                    className="w-full border border-border px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-indigo" 
+                    placeholder="e.g., Regional Auditor" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Description (Optional)</label>
+                  <textarea 
+                    value={roleDesc}
+                    onChange={(e) => setRoleDesc(e.target.value)}
+                    className="w-full border border-border px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-indigo h-20" 
+                    placeholder="Describe what this role can do..." 
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Permissions</label>
+                  <div className="space-y-2 border border-border p-3 rounded h-32 overflow-y-auto bg-slate-50">
+                    {['View Obligations', 'Edit Obligations', 'Manage Policies', 'Export Reports', 'Manage Users', 'Configure System'].map(perm => (
+                      <label key={perm} className="flex items-center gap-2 text-sm">
+                        <input type="checkbox" className="rounded border-border text-indigo focus:ring-indigo" />
+                        {perm}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <button type="button" onClick={() => setIsRoleOpen(false)} className="px-4 py-2 text-sm font-medium border border-border rounded hover:bg-secondary transition-colors">
+                  Cancel
+                </button>
+                <button type="submit" className="px-4 py-2 text-sm font-medium bg-indigo text-white rounded hover:bg-indigo/90 transition-colors">
+                  Save Role
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

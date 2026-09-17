@@ -1,355 +1,344 @@
 "use client";
-import { RiskBadge, StatusBadge } from "@/components/ui/badges";
+
 import {
   Search, ChevronRight, Upload, Sparkles, FileText, ListOrdered,
-  AlertTriangle, Users, Filter, MoreVertical, CheckCircle2, Info,
-  ArrowUpRight, Loader2, TrendingUp, X
+  AlertTriangle, Users, Filter, MoreVertical, ChevronLeft, TrendingUp, Info, ArrowUpRight
 } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState } from "react";
 import {
-  PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip
+  PieChart, Pie, Cell, ResponsiveContainer
 } from "recharts";
-import { api } from "@/lib/api/client";
-import { toast } from "sonner";
-import type { Obligation, Regulation } from "@/lib/types";
 
 const IMPACT_COLORS: Record<string, string> = {
-  Critical: "#ef4444",
-  High: "#f97316",
-  Medium: "#eab308",
-  Low: "#14b8a6",
+  "High Impact": "#ef4444",
+  "Medium Impact": "#f59e0b",
+  "Low Impact": "#3b82f6",
+  "No Impact": "#94a3b8",
 };
 
-const DEPT_COLORS = ["#9B8CFA", "#4969E8", "#38BDF8", "#16A394", "#FACC15", "#F472B6"];
+const donutData = [
+  { name: "High Impact", value: 9, color: "#ef4444" },
+  { name: "Medium Impact", value: 18, color: "#f59e0b" },
+  { name: "Low Impact", value: 14, color: "#3b82f6" },
+  { name: "No Impact", value: 7, color: "#94a3b8" },
+];
+
+const deptData = [
+  { name: "KYC & Customer Onboarding", count: 14, color: "#6366f1" },
+  { name: "Risk & Compliance", count: 10, color: "#3b82f6" },
+  { name: "Operations", count: 8, color: "#06b6d4" },
+  { name: "IT & Technology", count: 6, color: "#10b981" },
+  { name: "Legal", count: 5, color: "#f59e0b" },
+  { name: "Finance", count: 3, color: "#d1d5db" },
+  { name: "HR", count: 2, color: "#e5e7eb" },
+];
+
+const recentRegulations = [
+  { name: "RBI KYC Master Direction 2026", date: "20 Aug 2026", status: "Completed", pages: 42 },
+  { name: "AML Guidelines Update", date: "12 Aug 2026", status: "Completed", pages: 18 },
+  { name: "Cyber Security Framework", date: "10 Aug 2026", status: "In Progress", pages: 35 },
+  { name: "Priority Sector Lending Update", date: "05 Aug 2026", status: "Completed", pages: 28 },
+  { name: "Customer Data Protection Rules", date: "28 Jul 2026", status: "Completed", pages: 22 },
+];
+
+const obligations = [
+  { code: "C.2.1", title: "Customer Identity Verification", reg: "RBI KYC Master Direction 2026", dept: "KYC", impact: "High", summary: "Additional verification steps for non face-to-face customers", status: "Action Required", statusColor: "bg-red-100 text-red-700" },
+  { code: "C.3.4", title: "Periodic Review", reg: "RBI KYC Master Direction 2026", dept: "Operations", impact: "Medium", summary: "Review customer accounts based on risk profile", status: "In Progress", statusColor: "bg-blue-100 text-blue-700" },
+  { code: "D.1.2", title: "Data Retention", reg: "RBI Data Localization Guidelines", dept: "IT", impact: "High", summary: "Update data retention policy to 7 years", status: "Pending", statusColor: "bg-amber-100 text-amber-700" },
+  { code: "E.4.1", title: "Suspicious Transaction Monitoring", reg: "AML Guidelines 2026", dept: "Compliance", impact: "Medium", summary: "Enhanced monitoring for high-value transactions", status: "In Progress", statusColor: "bg-blue-100 text-blue-700" },
+  { code: "F.2.3", title: "Reporting to FIU", reg: "AML Guidelines 2026", dept: "Compliance", impact: "Low", summary: "No significant changes, minor format updates", status: "Completed", statusColor: "bg-green-100 text-green-700" },
+];
+
+const impactBadge = (impact: string) => {
+  const colors: Record<string, string> = {
+    High: "bg-red-500 text-white",
+    Medium: "bg-amber-400 text-white",
+    Low: "bg-blue-400 text-white",
+  };
+  return <span className={`px-3 py-1 rounded text-xs font-bold ${colors[impact] || "bg-slate-200 text-slate-700"}`}>{impact}</span>;
+};
 
 export default function ImpactAnalysis() {
-  const [obligations, setObligations] = useState<Obligation[]>([]);
-  const [regulations, setRegulations] = useState<Regulation[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [analyzing, setAnalyzing] = useState(false);
-  const [analysisStep, setAnalysisStep] = useState(0);
-  const [showUpload, setShowUpload] = useState(false);
+  const [activeTab, setActiveTab] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const [search, setSearch] = useState("");
-  const [filterDept, setFilterDept] = useState("");
-  const [filterImpact, setFilterImpact] = useState("");
-  const [filterReg, setFilterReg] = useState("");
-
-  const loadData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const [obs, regs] = await Promise.all([
-        api.obligations({ limit: 100 }),
-        api.regulations({ limit: 5 }),
-      ]);
-      setObligations(obs);
-      setRegulations(regs);
-    } catch {
-      toast.error("Failed to load obligations. Backend offline.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => { loadData(); }, [loadData]);
-
-  // Derived stats
-  const filtered = useMemo(() => {
-    return obligations.filter(o => {
-      if (filterDept && o.department !== filterDept) return false;
-      if (filterImpact && o.impact !== filterImpact) return false;
-      if (filterReg && o.regulation_id !== filterReg) return false;
-      if (search && !o.requirement.toLowerCase().includes(search.toLowerCase()) &&
-        !o.obligation_code.toLowerCase().includes(search.toLowerCase())) return false;
-      return true;
-    });
-  }, [obligations, search, filterDept, filterImpact, filterReg]);
-
-  const stats = useMemo(() => {
-    const regsCount = new Set(filtered.map(o => o.regulation_id)).size;
-    const highImpact = filtered.filter(o => o.impact === "Critical" || o.impact === "High").length;
-    const depts = new Set(filtered.map(o => o.department)).size;
-
-    const donut = [
-      { name: "Critical", value: filtered.filter(o => o.impact === "Critical").length, color: IMPACT_COLORS.Critical },
-      { name: "High", value: filtered.filter(o => o.impact === "High").length, color: IMPACT_COLORS.High },
-      { name: "Medium", value: filtered.filter(o => o.impact === "Medium").length, color: IMPACT_COLORS.Medium },
-      { name: "Low", value: filtered.filter(o => o.impact === "Low").length, color: IMPACT_COLORS.Low },
-    ].filter(d => d.value > 0);
-
-    const deptCounts: Record<string, number> = {};
-    filtered.forEach(o => { deptCounts[o.department] = (deptCounts[o.department] || 0) + 1; });
-    const bar = Object.entries(deptCounts)
-      .map(([name, obligations]) => ({ name, obligations }))
-      .sort((a, b) => b.obligations - a.obligations)
-      .slice(0, 6); // Top 6
-
-    return { regsCount, highImpact, depts, donut, bar };
-  }, [filtered]);
-
-  const steps = [
-    "UPLOADING DOCUMENT",
-    "EXTRACTING TEXT",
-    "UNDERSTANDING CLAUSES",
-    "EXTRACTING OBLIGATIONS",
-    "RETRIEVING POLICIES",
-    "MAPPING & GAPS",
-    "GENERATING ACTIONS",
+  const tabs = [
+    { id: "all", label: "All Impacts (48)" },
+    { id: "high", label: "High Impact (9)" },
+    { id: "medium", label: "Medium Impact (18)" },
+    { id: "low", label: "Low Impact (14)" },
+    { id: "none", label: "No Impact (7)" },
   ];
 
-  const handleUpload = async (formData: FormData) => {
-    setShowUpload(false);
-    setAnalyzing(true);
-    setAnalysisStep(0);
-    try {
-      const res = await api.uploadRegulation(formData);
-      // Poll job status
-      const poll = setInterval(async () => {
-        try {
-          const job = await api.ingestJob(res.job_id);
-          const stageMap: Record<string, number> = {
-            "document": 1, "understand": 2, "extract": 3,
-            "retrieve": 4, "map": 5, "assess": 5, "act": 6
-          };
-          if (job.current_stage) {
-            setAnalysisStep(stageMap[job.current_stage] || 1);
-          }
-          if (job.status === "Completed") {
-            clearInterval(poll);
-            setAnalysisStep(6);
-            setTimeout(() => {
-              setAnalyzing(false);
-              loadData(); // Refresh data
-              toast.success("Analysis complete", { description: "Regulation fully mapped." });
-            }, 1000);
-          } else if (job.status === "Failed") {
-            clearInterval(poll);
-            setAnalyzing(false);
-            toast.error("Pipeline failed", { description: job.error_message || "Unknown error" });
-          }
-        } catch {
-          clearInterval(poll);
-          setAnalyzing(false);
-        }
-      }, 2000);
-    } catch (e: any) {
-      setAnalyzing(false);
-      toast.error("Upload failed", { description: e.message });
-    }
-  };
-
   return (
-    <div className="space-y-6 flex flex-col h-full relative pb-8">
-      {analyzing && (
-        <div className="absolute inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center rounded-lg">
-          <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-8 max-w-md w-full flex flex-col items-center">
-            <Loader2 className="w-12 h-12 text-indigo animate-spin mb-6" />
-            <h3 className="text-lg font-bold font-mono tracking-widest text-indigo mb-8 text-center">{steps[analysisStep]}</h3>
-            <div className="w-full space-y-3">
-              {steps.map((step, i) => (
-                <div key={i} className={`flex items-center gap-3 text-sm font-mono ${i < analysisStep ? "text-teal" : i === analysisStep ? "text-foreground font-bold" : "text-muted-foreground opacity-50"}`}>
-                  {i < analysisStep ? <CheckCircle2 className="w-4 h-4" /> : i === analysisStep ? <div className="w-4 h-4 border-2 border-indigo border-t-transparent rounded-full animate-spin" /> : <div className="w-4 h-4 rounded-full border border-muted-foreground" />}
-                  {step}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Header */}
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Link href="/" className="hover:text-indigo">Home</Link>
-        <ChevronRight className="w-4 h-4" />
-        <span className="text-foreground">Impact Analysis</span>
+    <div className="space-y-6 flex flex-col h-full text-[#0F172A] pb-10">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2 text-sm text-slate-500">
+        <Link href="/" className="hover:text-[#0F172A] transition-colors">Home</Link>
+        <ChevronRight className="w-3.5 h-3.5" />
+        <span className="text-[#0F172A] font-medium">Impact Analysis</span>
       </div>
 
+      {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="font-serif text-3xl font-bold tracking-tight">Impact Analysis</h1>
-          <p className="text-muted-foreground mt-1 text-base">Understand the impact of new and existing regulations on your organization.</p>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Impact Analysis</h1>
+          <p className="text-slate-500 text-sm">Understand the impact of new and existing regulations on your organization.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => setShowUpload(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo text-white rounded-md font-medium text-sm hover:bg-indigo/90 transition-colors shadow-md shadow-indigo/20">
-            <Upload className="w-4 h-4" /> Ingest Regulation
+          <button className="flex items-center gap-2 border border-[#2563EB] text-[#2563EB] px-4 py-2 rounded text-sm font-medium hover:bg-blue-50 transition-colors bg-white">
+            <Upload className="w-4 h-4" /> Upload Regulation
+          </button>
+          <button className="flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
+            <Sparkles className="w-4 h-4" /> Analyze with AI
           </button>
         </div>
       </div>
 
-      <div className="flex gap-6">
-        {/* Main Content Area */}
+      <div className="flex gap-6 items-start">
+        {/* Main Content */}
         <div className="flex-1 space-y-6 min-w-0">
 
-          {/* Metrics Cards */}
+          {/* Metric Cards */}
           <div className="grid grid-cols-4 gap-4">
-            <MetricCard icon={<FileText className="w-6 h-6 text-indigo" />} iconBg="bg-indigo/10"
-              value={loading ? "…" : String(stats.regsCount)} label="Regulations" />
-            <MetricCard icon={<ListOrdered className="w-6 h-6 text-indigo" />} iconBg="bg-indigo/10"
-              value={loading ? "…" : String(filtered.length)} label="Obligations Identified" />
-            <MetricCard icon={<AlertTriangle className="w-6 h-6 text-red" />} iconBg="bg-red/10 border border-red/20"
-              value={loading ? "…" : String(stats.highImpact)} label="High Impact Areas" />
-            <MetricCard icon={<Users className="w-6 h-6 text-indigo" />} iconBg="bg-indigo/10"
-              value={loading ? "…" : String(stats.depts)} label="Departments Affected" />
+            <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex items-center gap-3">
+              <div className="w-11 h-11 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                <FileText className="w-5 h-5 text-[#2563EB]" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold">12</p>
+                <p className="text-[11px] text-slate-500 font-medium">Regulations Analyzed</p>
+                <p className="text-[11px] text-green-600 font-semibold">↑ 20%</p>
+              </div>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex items-center gap-3">
+              <div className="w-11 h-11 rounded-lg bg-purple-50 flex items-center justify-center shrink-0">
+                <ListOrdered className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold">48</p>
+                <p className="text-[11px] text-slate-500 font-medium">Obligations Identified</p>
+                <p className="text-[11px] text-green-600 font-semibold">↑ 15%</p>
+              </div>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex items-center gap-3">
+              <div className="w-11 h-11 rounded-lg bg-red-50 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-5 h-5 text-red-500" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold">9</p>
+                <p className="text-[11px] text-slate-500 font-medium">High Impact Areas</p>
+                <p className="text-[11px] text-red-500 font-semibold">↓ 25%</p>
+              </div>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex items-center gap-3">
+              <div className="w-11 h-11 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                <Users className="w-5 h-5 text-[#2563EB]" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold">6</p>
+                <p className="text-[11px] text-slate-500 font-medium">Departments Affected</p>
+                <p className="text-[11px] text-green-600 font-semibold">↑ 50%</p>
+              </div>
+            </div>
           </div>
 
           {/* Charts Row */}
-          <div className="grid grid-cols-2 gap-4">
-            {/* Impact Overview (Donut) */}
-            <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-6 flex flex-col">
-              <div className="mb-6">
-                <h3 className="font-serif font-bold text-lg">Impact Overview</h3>
-                <p className="text-xs text-muted-foreground mt-1">Distribution of regulatory impacts</p>
+          <div className="grid grid-cols-2 gap-5">
+            {/* Impact Overview Donut */}
+            <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5">
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="font-bold text-[#0F172A]">Impact Overview</h3>
+                <select className="bg-white border border-slate-200 px-2 py-1 rounded text-xs outline-none text-slate-600">
+                  <option>By Impact Level</option>
+                </select>
               </div>
-
-              {!loading && filtered.length > 0 ? (
-                <div className="flex-1 flex items-center justify-between">
-                  <div className="h-48 w-48 relative shrink-0">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie data={stats.donut} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value" stroke="none">
-                          {stats.donut.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
-                        </Pie>
-                      </PieChart>
-                    </ResponsiveContainer>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                      <span className="text-3xl font-bold">{filtered.length}</span>
-                      <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider text-center leading-tight mt-1">Total</span>
-                    </div>
-                  </div>
-                  <div className="flex-1 ml-6 space-y-4">
-                    {stats.donut.map((item) => (
-                      <div key={item.name} className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                          <span className="text-sm font-medium">{item.name}</span>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <span className="text-sm font-bold w-4 text-right">{item.value}</span>
-                          <span className="text-sm text-muted-foreground w-10 text-right">{Math.round((item.value / filtered.length) * 100)}%</span>
-                        </div>
-                      </div>
-                    ))}
+              <p className="text-xs text-slate-500 mb-4">Distribution of regulatory impacts across your organization</p>
+              <div className="flex items-center gap-6">
+                <div className="relative w-[180px] h-[180px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={donutData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={55}
+                        outerRadius={85}
+                        paddingAngle={2}
+                        dataKey="value"
+                        stroke="none"
+                      >
+                        {donutData.map((entry, i) => (
+                          <Cell key={i} fill={entry.color} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-2xl font-bold text-[#0F172A]">48</span>
+                    <span className="text-[10px] text-slate-500 font-medium">Total<br/>Obligations</span>
                   </div>
                 </div>
-              ) : (
-                <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm font-medium">No data</div>
-              )}
+                <div className="space-y-3 text-sm">
+                  {donutData.map(d => (
+                    <div key={d.name} className="flex items-center gap-3">
+                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: d.color }} />
+                      <span className="text-slate-600 w-28">{d.name}</span>
+                      <span className="font-bold text-[#0F172A] w-6 text-right">{d.value}</span>
+                      <span className="text-slate-400 text-xs">{Math.round(d.value / 48 * 100)}%</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            {/* Departments Affected (Bar) */}
-            <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-6 flex flex-col">
-              <div className="mb-6">
-                <h3 className="font-serif font-bold text-lg">Departments Affected</h3>
-                <p className="text-xs text-muted-foreground mt-1">Obligations by department</p>
+            {/* Departments Affected */}
+            <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-5">
+              <h3 className="font-bold text-[#0F172A] mb-1">Departments Affected</h3>
+              <p className="text-xs text-slate-500 mb-4">Number of obligations by department</p>
+              <div className="space-y-3">
+                {deptData.map(d => (
+                  <div key={d.name} className="flex items-center gap-3">
+                    <span className="text-xs text-slate-600 w-[180px] shrink-0 truncate">{d.name}</span>
+                    <div className="flex-1 bg-slate-100 rounded-full h-3 overflow-hidden">
+                      <div className="h-full rounded-full" style={{ width: `${(d.count / 14) * 100}%`, backgroundColor: d.color }} />
+                    </div>
+                    <span className="text-xs font-bold text-[#0F172A] w-6 text-right">{d.count}</span>
+                  </div>
+                ))}
               </div>
-              {!loading && filtered.length > 0 ? (
-                <div className="flex-1 flex flex-col justify-center space-y-4">
-                  {stats.bar.map((item, i) => {
-                    const max = Math.max(...stats.bar.map(b => b.obligations));
-                    return (
-                      <div key={item.name} className="flex items-center gap-4">
-                        <div className="w-32 shrink-0 text-xs font-medium truncate" title={item.name}>{item.name}</div>
-                        <div className="flex-1 h-3 bg-secondary rounded-full overflow-hidden">
-                          <div className={`h-full rounded-full`} style={{ backgroundColor: DEPT_COLORS[i % DEPT_COLORS.length], width: `${(item.obligations / max) * 100}%` }} />
-                        </div>
-                        <div className="w-6 text-xs font-bold text-right">{item.obligations}</div>
-                      </div>
-                    )
-                  })}
-                </div>
-              ) : (
-                <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm font-medium">No data</div>
-              )}
             </div>
           </div>
 
-          {/* Table Area */}
-          <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] flex flex-col pb-4">
-            <div className="p-4 border-b border-border flex flex-col gap-4">
-              <div className="flex items-center gap-3">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <input type="text" placeholder="Search requirements..." value={search} onChange={e => setSearch(e.target.value)}
-                    className="w-full pl-9 pr-3 py-1.5 text-sm border border-border rounded bg-background focus:outline-none focus:border-indigo" />
-                </div>
-                <select value={filterDept} onChange={e => setFilterDept(e.target.value)} className="bg-background border border-border rounded px-3 py-1.5 text-sm outline-none">
-                  <option value="">All Departments</option>
-                  {[...new Set(obligations.map(o => o.department))].map(d => <option key={d} value={d}>{d}</option>)}
-                </select>
-                <select value={filterImpact} onChange={e => setFilterImpact(e.target.value)} className="bg-background border border-border rounded px-3 py-1.5 text-sm outline-none">
-                  <option value="">All Impacts</option>
-                  {["Critical", "High", "Medium", "Low"].map(d => <option key={d} value={d}>{d}</option>)}
-                </select>
-                <button onClick={() => { setSearch(""); setFilterDept(""); setFilterImpact(""); }} className="text-indigo text-sm font-medium hover:underline ml-2">Clear Filters</button>
-              </div>
+          {/* Tabs */}
+          <div className="flex items-center justify-between border-b border-slate-200">
+            <div className="flex">
+              {tabs.map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
+                    activeTab === tab.id
+                      ? "border-[#2563EB] text-[#2563EB] font-bold"
+                      : "border-transparent text-slate-500 hover:text-slate-700"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
+            <button className="flex items-center gap-2 border border-[#2563EB] text-[#2563EB] px-3 py-1.5 rounded text-xs font-medium hover:bg-blue-50 transition-colors mb-1">
+              <Filter className="w-3.5 h-3.5" /> Filters
+            </button>
+          </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left">
-                <thead className="text-xs text-foreground font-bold bg-secondary/30">
-                  <tr>
-                    <th className="px-4 py-3">Code / Type</th>
-                    <th className="px-4 py-3">Regulation</th>
-                    <th className="px-4 py-3">Department</th>
-                    <th className="px-4 py-3 text-center">Impact</th>
-                    <th className="px-4 py-3 w-[280px]">Requirement</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3 text-right">Action</th>
+          {/* Search & Filters */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input type="text" placeholder="Search obligations, clauses, keywords..." className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded text-sm outline-none focus:border-[#2563EB]" />
+            </div>
+            <select className="bg-white border border-slate-200 px-3 py-2 rounded text-sm outline-none text-slate-600">
+              <option>Department</option>
+            </select>
+            <select className="bg-white border border-slate-200 px-3 py-2 rounded text-sm outline-none text-slate-600">
+              <option>Impact Level</option>
+            </select>
+            <select className="bg-white border border-slate-200 px-3 py-2 rounded text-sm outline-none text-slate-600">
+              <option>Regulation</option>
+            </select>
+            <select className="bg-white border border-slate-200 px-3 py-2 rounded text-sm outline-none text-slate-600">
+              <option>Status</option>
+            </select>
+            <button className="text-[#2563EB] text-sm font-medium hover:underline">Clear Filters</button>
+          </div>
+
+          {/* Obligations Table */}
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-slate-50 border-b border-slate-200">
+                <tr>
+                  <th className="pl-4 pr-2 py-3 w-8"><input type="checkbox" className="rounded border-slate-300" /></th>
+                  <th className="px-3 py-3 font-semibold text-xs uppercase tracking-wider text-slate-500">Clause / Obligation</th>
+                  <th className="px-3 py-3 font-semibold text-xs uppercase tracking-wider text-slate-500">Source Regulation</th>
+                  <th className="px-3 py-3 font-semibold text-xs uppercase tracking-wider text-slate-500">Department</th>
+                  <th className="px-3 py-3 font-semibold text-xs uppercase tracking-wider text-slate-500">Impact Level</th>
+                  <th className="px-3 py-3 font-semibold text-xs uppercase tracking-wider text-slate-500">Summary of Impact</th>
+                  <th className="px-3 py-3 font-semibold text-xs uppercase tracking-wider text-slate-500">Status</th>
+                  <th className="px-3 py-3 font-semibold text-xs uppercase tracking-wider text-slate-500 text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {obligations.map((obl) => (
+                  <tr key={obl.code} className="hover:bg-slate-50 transition-colors">
+                    <td className="pl-4 pr-2 py-4"><input type="checkbox" className="rounded border-slate-300" /></td>
+                    <td className="px-3 py-4">
+                      <span className="text-[#2563EB] font-semibold text-xs">{obl.code}</span>
+                      <span className="text-slate-600 text-xs"> - {obl.title}</span>
+                    </td>
+                    <td className="px-3 py-4 text-xs text-slate-600">{obl.reg}</td>
+                    <td className="px-3 py-4 text-xs text-slate-600">{obl.dept}</td>
+                    <td className="px-3 py-4">{impactBadge(obl.impact)}</td>
+                    <td className="px-3 py-4 text-xs text-slate-600 max-w-[200px]">{obl.summary}</td>
+                    <td className="px-3 py-4">
+                      <span className={`px-2.5 py-1 rounded text-[10px] font-bold ${obl.statusColor}`}>{obl.status}</span>
+                    </td>
+                    <td className="px-3 py-4 text-center">
+                      <button className="p-1 hover:bg-slate-100 rounded text-slate-400"><MoreVertical className="w-4 h-4" /></button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-border font-medium text-sm">
-                  {loading ? (
-                    <tr><td colSpan={7} className="py-12 text-center text-muted-foreground"><Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />Loading...</td></tr>
-                  ) : filtered.length === 0 ? (
-                    <tr><td colSpan={7} className="py-12 text-center text-muted-foreground">No obligations found</td></tr>
-                  ) : (
-                    filtered.map((row) => (
-                      <tr key={row.id} className="hover:bg-secondary/30 transition-colors">
-                        <td className="px-4 py-4">
-                          <span className="font-mono text-indigo block">{row.obligation_code}</span>
-                          <span className="text-xs text-muted-foreground">{row.type}</span>
-                        </td>
-                        <td className="px-4 py-4 text-xs">
-                          {row.regulation_title || "—"}
-                          {row.clause_no && <span className="block text-muted-foreground mt-1">Cl. {row.clause_no}</span>}
-                        </td>
-                        <td className="px-4 py-4">{row.department}</td>
-                        <td className="px-4 py-4 text-center"><RiskBadge level={row.impact} /></td>
-                        <td className="px-4 py-4 text-xs font-normal text-muted-foreground leading-relaxed line-clamp-3">{row.requirement}</td>
-                        <td className="px-4 py-4"><StatusBadge status={row.status} /></td>
-                        <td className="px-4 py-4 text-right">
-                          <Link href={`/regulatory-trace`} className="text-xs text-indigo font-semibold hover:underline">Trace →</Link>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Pagination */}
+            <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between text-sm bg-white">
+              <span className="text-slate-500 text-xs">Showing 1–5 of 48 obligations</span>
+              <div className="flex items-center gap-1">
+                <button className="w-8 h-8 rounded flex items-center justify-center text-slate-500 hover:bg-slate-100 border border-transparent"><ChevronLeft className="w-4 h-4" /></button>
+                <button className="w-8 h-8 rounded flex items-center justify-center bg-[#2563EB] text-white text-xs font-medium border border-[#2563EB]">1</button>
+                {[2,3,4,5].map(p => (
+                  <button key={p} className="w-8 h-8 rounded flex items-center justify-center text-slate-700 hover:bg-slate-100 text-xs border border-transparent">{p}</button>
+                ))}
+                <span className="text-slate-400 px-1">...</span>
+                <button className="w-8 h-8 rounded flex items-center justify-center text-slate-700 hover:bg-slate-100 text-xs border border-transparent">10</button>
+                <button className="w-8 h-8 rounded flex items-center justify-center text-slate-500 hover:bg-slate-100 border border-transparent"><ChevronRight className="w-4 h-4" /></button>
+                <select className="bg-white border border-slate-200 px-2 py-1.5 rounded text-xs outline-none ml-2 text-slate-600">
+                  <option>5 per page</option>
+                  <option>10 per page</option>
+                  <option>25 per page</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Right Sidebar */}
         <div className="w-[320px] shrink-0 space-y-6">
+
           {/* Recent Analysis */}
-          <div>
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="font-serif font-bold">Recent Regulations</h3>
-              <Link href="/regulatory-feed" className="text-indigo text-xs font-semibold hover:underline">View All</Link>
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="font-bold text-[#0F172A]">Recent Analysis</h3>
+              <button className="text-[#2563EB] text-xs font-semibold hover:underline">View All</button>
             </div>
-            <div className="space-y-2">
-              {regulations.map((reg) => (
-                <div key={reg.id} className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-3 flex gap-3 hover:border-indigo/30 transition-colors">
-                  <div className="mt-0.5 p-1.5 rounded bg-indigo/10 text-indigo shrink-0"><FileText className="w-4 h-4" /></div>
+            <div className="divide-y divide-slate-100">
+              {recentRegulations.map((reg, i) => (
+                <div key={i} className="px-4 py-3 flex items-start gap-3 hover:bg-slate-50 transition-colors cursor-pointer">
+                  <div className="w-8 h-8 rounded bg-blue-50 flex items-center justify-center shrink-0 mt-0.5">
+                    <FileText className="w-4 h-4 text-[#2563EB]" />
+                  </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm truncate">{reg.title}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className={`w-1.5 h-1.5 rounded-full ${reg.status === "Action Required" ? "bg-red-500" : "bg-teal-500"}`} />
-                      <span className="text-[10px] text-muted-foreground">{reg.status} • {reg.obligations_count} obs</span>
+                    <p className="text-xs font-bold text-[#0F172A] truncate">{reg.name}</p>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span className={`w-1.5 h-1.5 rounded-full ${reg.status === "Completed" ? "bg-green-500" : "bg-blue-500"}`} />
+                      <span className="text-[10px] text-slate-500">{reg.status} • {reg.pages} pages</span>
                     </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-slate-400 whitespace-nowrap">{reg.date}</span>
+                    <MoreVertical className="w-3.5 h-3.5 text-slate-400" />
                   </div>
                 </div>
               ))}
@@ -357,100 +346,63 @@ export default function ImpactAnalysis() {
           </div>
 
           {/* Key Insights */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="font-serif font-bold">Key Insights</h3>
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="font-bold text-[#0F172A]">Key Insights</h3>
+              <button className="flex items-center gap-1.5 border border-[#2563EB] text-[#2563EB] px-2 py-1 rounded text-[10px] font-semibold hover:bg-blue-50 transition-colors">
+                <FileText className="w-3 h-3" /> Generate Report
+              </button>
             </div>
-            <div className="space-y-4 bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-4 ">
-              <div className="flex gap-3 items-start pb-3 border-b border-border">
-                <div className="p-1.5 rounded bg-red-100 text-red-600 shrink-0 mt-0.5"><AlertTriangle className="w-4 h-4" /></div>
-                <p className="text-sm font-medium">{stats.highImpact} high-impact obligations require immediate attention.</p>
+            <div className="p-4 space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded bg-red-50 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-4 h-4 text-red-500" />
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed"><span className="font-bold text-red-600">9 high-impact obligations</span> require immediate attention.</p>
               </div>
-              <div className="flex gap-3 items-start pb-3 border-b border-border">
-                <div className="p-1.5 rounded bg-indigo/10 text-indigo shrink-0 mt-0.5"><Users className="w-4 h-4" /></div>
-                <p className="text-sm font-medium">{stats.bar[0]?.name || 'Top'} department is most affected.</p>
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded bg-purple-50 flex items-center justify-center shrink-0">
+                  <Users className="w-4 h-4 text-purple-600" />
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed"><span className="font-bold text-purple-700">KYC department</span> is most affected (29% of total obligations).</p>
               </div>
-              <div className="flex gap-3 items-start">
-                <div className="p-1.5 rounded bg-teal/10 text-teal shrink-0 mt-0.5"><TrendingUp className="w-4 h-4" /></div>
-                <p className="text-sm font-medium">Compliance pipeline generated AI traces for all obligations.</p>
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded bg-green-50 flex items-center justify-center shrink-0">
+                  <TrendingUp className="w-4 h-4 text-green-600" />
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">Overall compliance workload expected to <span className="font-bold text-green-700">increase by 23%</span>.</p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded bg-blue-50 flex items-center justify-center shrink-0">
+                  <Info className="w-4 h-4 text-[#2563EB]" />
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed"><span className="font-bold text-[#2563EB]">3 regulations</span> have overlapping requirements.</p>
               </div>
             </div>
           </div>
+
+          {/* Recommended Actions */}
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 className="font-bold text-[#0F172A]">Recommended Actions</h3>
+              <button className="text-[#2563EB] text-xs font-semibold hover:underline">View All</button>
+            </div>
+            <div className="p-4 space-y-4">
+              {[
+                "Prioritize implementation of new KYC verification requirements",
+                "Update transaction monitoring systems",
+                "Review and align data retention policies",
+                "Conduct cross-department impact review",
+              ].map((action, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-full bg-[#2563EB] text-white flex items-center justify-center shrink-0 text-xs font-bold">{i + 1}</div>
+                  <p className="text-xs text-slate-600 leading-relaxed pt-1">{action}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
-      </div>
-
-      {showUpload && <UploadModal onClose={() => setShowUpload(false)} onUpload={handleUpload} />}
-    </div>
-  );
-}
-
-function MetricCard({ icon, iconBg, value, label }: any) {
-  return (
-    <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-5 flex gap-4 h-full">
-      <div className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 ${iconBg}`}>{icon}</div>
-      <div className="flex flex-col">
-        <h3 className="text-2xl font-bold leading-none">{value}</h3>
-        <span className="text-xs font-semibold text-muted-foreground mt-2">{label}</span>
-      </div>
-    </div>
-  );
-}
-
-function UploadModal({ onClose, onUpload }: { onClose: () => void, onUpload: (fd: FormData) => void }) {
-  const [file, setFile] = useState<File | null>(null);
-  const [title, setTitle] = useState("");
-  const [regulator, setRegulator] = useState("RBI");
-  const [ref, setRef] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!file || !title) return;
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("title", title);
-    fd.append("regulator", regulator);
-    fd.append("reference_number", ref);
-    fd.append("category", "General");
-    onUpload(fd);
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center backdrop-blur-sm p-4">
-      <div className="bg-card border-[3px] border-black shadow-[5px_5px_0_0_#000000] max-w-md w-full">
-        <div className="p-4 border-b border-border flex justify-between items-center">
-          <h2 className="font-serif font-bold text-lg">Ingest New Regulation</h2>
-          <button onClick={onClose}><X className="w-5 h-5 text-muted-foreground hover:text-foreground" /></button>
-        </div>
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
-          <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">Document (PDF/DOCX) *</label>
-            <input required type="file" accept=".pdf,.docx" onChange={e => setFile(e.target.files?.[0] || null)}
-              className="w-full text-sm border border-border p-2 rounded" />
-          </div>
-          <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">Title *</label>
-            <input required value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Master Direction on IT Framework"
-              className="w-full text-sm border border-border p-2 rounded bg-background" />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">Regulator *</label>
-              <input required value={regulator} onChange={e => setRegulator(e.target.value)}
-                className="w-full text-sm border border-border p-2 rounded bg-background" />
-            </div>
-            <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">Reference No.</label>
-              <input value={ref} onChange={e => setRef(e.target.value)} placeholder="RBI/2026/..."
-                className="w-full text-sm border border-border p-2 rounded bg-background" />
-            </div>
-          </div>
-          <div className="pt-2">
-            <button type="submit" disabled={!file || !title}
-              className="w-full bg-indigo text-white font-bold text-sm py-2.5 rounded hover:bg-indigo/90 disabled:opacity-50">
-              Start AI Analysis
-            </button>
-          </div>
-        </form>
       </div>
     </div>
   );

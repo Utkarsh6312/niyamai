@@ -1,7 +1,7 @@
 "use client";
 import {
   Search, ChevronRight, Settings, Plus, FileText, Bookmark, MoreVertical,
-  Calendar, Building, Globe, Clock, X, Scale, Loader2, Play, ListOrdered
+  Calendar, Building, Globe, Clock, X, Scale, Loader2, Play, ListOrdered, Database
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useMemo, useEffect, useCallback } from "react";
@@ -19,6 +19,30 @@ export default function RegulatoryFeed() {
   const [search, setSearch] = useState("");
   const [regulatorFilter, setRegulatorFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
+
+  const [isSourcesOpen, setIsSourcesOpen] = useState(false);
+
+  const handleSaveSources = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.success("Source preferences updated successfully");
+    setIsSourcesOpen(false);
+  };
+
+  const toggleBookmark = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setBookmarks(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+        toast.info("Regulation removed from bookmarks");
+      } else {
+        next.add(id);
+        toast.success("Regulation bookmarked!");
+      }
+      return next;
+    });
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -78,7 +102,7 @@ export default function RegulatoryFeed() {
             <p className="text-muted-foreground mt-1 text-base">Stay updated with the latest regulatory developments from trusted sources.</p>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={() => toast.info("Opening Source Preferences...")} className="flex items-center gap-2 px-4 py-2 border border-indigo text-indigo bg-background rounded-md font-medium text-sm hover:bg-indigo/5 transition-colors">
+            <button onClick={() => setIsSourcesOpen(true)} className="flex items-center gap-2 px-4 py-2 border border-indigo text-indigo bg-background rounded-md font-medium text-sm hover:bg-indigo/5 transition-colors">
               <Settings className="w-4 h-4" /> Source Preferences
             </button>
             <Link href="/impact-analysis" className="flex items-center gap-2 px-4 py-2 bg-indigo text-white rounded-md font-medium text-sm hover:bg-indigo/90 transition-colors shadow-sm">
@@ -167,7 +191,7 @@ export default function RegulatoryFeed() {
                     </td>
                     <td className="px-4 py-4 text-right">
                        <div className="flex items-center justify-end gap-2 text-muted-foreground">
-                          <button onClick={(e) => { e.stopPropagation(); toast.success("Regulation bookmarked!"); }} className="hover:text-indigo transition-colors p-1"><Bookmark className="w-4 h-4" /></button>
+                          <button onClick={(e) => toggleBookmark(row.id, e)} className={`transition-colors p-1 ${bookmarks.has(row.id) ? 'text-indigo fill-indigo' : 'hover:text-indigo'}`}><Bookmark className={`w-4 h-4 ${bookmarks.has(row.id) ? 'fill-current' : ''}`} /></button>
                           <button onClick={(e) => { e.stopPropagation(); toast.info("More options menu opened"); }} className="hover:text-foreground transition-colors p-1"><MoreVertical className="w-4 h-4" /></button>
                        </div>
                     </td>
@@ -256,11 +280,45 @@ export default function RegulatoryFeed() {
         )}
 
       </div>
+      
+      {/* Source Preferences Modal */}
+      {isSourcesOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-6 w-full max-w-lg">
+            <h2 className="text-xl font-bold font-serif mb-4 flex items-center gap-2"><Database className="w-5 h-5 text-indigo"/> Regulatory Source Preferences</h2>
+            <form onSubmit={handleSaveSources}>
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground mb-4">Select which regulatory bodies and data sources you want to actively monitor in your feed.</p>
+                
+                <div className="space-y-3 border border-border p-3 rounded h-48 overflow-y-auto bg-slate-50">
+                  {['Reserve Bank of India (RBI)', 'Securities and Exchange Board of India (SEBI)', 'Ministry of Corporate Affairs (MCA)', 'Insurance Regulatory and Development Authority (IRDAI)', 'National Payments Corporation of India (NPCI)'].map(source => (
+                    <label key={source} className="flex items-start gap-3 text-sm p-2 hover:bg-white rounded border border-transparent hover:border-border transition-colors cursor-pointer">
+                      <input type="checkbox" defaultChecked className="mt-1 rounded border-border text-indigo focus:ring-indigo" />
+                      <div>
+                        <span className="font-medium text-foreground">{source}</span>
+                        <p className="text-xs text-muted-foreground mt-0.5">Real-time monitoring</p>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <button type="button" onClick={() => setIsSourcesOpen(false)} className="px-4 py-2 text-sm font-medium border border-border rounded hover:bg-secondary transition-colors">
+                  Cancel
+                </button>
+                <button type="submit" className="px-4 py-2 text-sm font-medium bg-indigo text-white rounded hover:bg-indigo/90 transition-colors">
+                  Save Preferences
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-function MetricCard({ icon, iconBg, value, label }: any) {
+function MetricCard({ icon, iconBg, value, label }: { icon: React.ReactNode, iconBg: string, value: React.ReactNode, label: string }) {
   return (
     <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-5 flex items-center gap-4">
       <div className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 ${iconBg}`}>{icon}</div>
@@ -272,7 +330,7 @@ function MetricCard({ icon, iconBg, value, label }: any) {
   );
 }
 
-function MetadataCard({ icon: Icon, title, value }: any) {
+function MetadataCard({ icon: Icon, title, value }: { icon: any, title: string, value: React.ReactNode }) {
    return (
       <div className="border-[3px] border-black rounded-none p-3 bg-card flex items-start gap-3 shadow-[5px_5px_0_0_#000000] hover:border-black transition-colors">
          <div className="w-8 h-8 rounded bg-indigo/10 text-indigo flex items-center justify-center shrink-0">

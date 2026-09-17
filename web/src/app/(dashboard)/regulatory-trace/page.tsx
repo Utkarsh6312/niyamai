@@ -12,7 +12,7 @@ function TraceContent() {
   const searchParams = useSearchParams();
   const obId = searchParams.get("obligationId");
 
-  const [graphData, setGraphData] = useState<{ nodes: any[], edges: any[] } | null>(null);
+  const [graphData, setGraphData] = useState<{ nodes: { type: string, data: Record<string, any>, id: string }[], edges: unknown[] } | null>(null);
   const [obligation, setObligation] = useState<Obligation | null>(null);
   const [loading, setLoading] = useState(true);
 

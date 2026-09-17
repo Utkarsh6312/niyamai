@@ -14,6 +14,20 @@ export default function ObligationExplorer() {
   const [search, setSearch] = useState("");
   const [filterDept, setFilterDept] = useState("");
   const [filterImpact, setFilterImpact] = useState("");
+  
+  const [isViewOpen, setIsViewOpen] = useState(false);
+  const [viewName, setViewName] = useState("");
+
+  const handleSaveView = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!viewName) {
+      toast.error("Please enter a view name");
+      return;
+    }
+    toast.success(`Custom view "${viewName}" saved!`);
+    setIsViewOpen(false);
+    setViewName("");
+  };
 
   useEffect(() => {
     async function load() {
@@ -40,6 +54,34 @@ export default function ObligationExplorer() {
     return true;
   });
 
+  const handleExportCSV = () => {
+    if (!filtered || filtered.length === 0) {
+      toast.error("No data to export");
+      return;
+    }
+    const headers = ["Obligation Code", "Requirement", "Department", "Impact", "Status", "Type"];
+    const csvRows = [
+      headers.join(","),
+      ...filtered.map(o => [
+        o.obligation_code,
+        `"${(o.requirement || "").replace(/"/g, '""')}"`,
+        o.department,
+        o.impact,
+        o.status,
+        o.type || ""
+      ].join(","))
+    ];
+    const csvContent = csvRows.join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "Obligations_Report.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success("Exported Obligations_Report.csv");
+  };
+
   return (
     <div className="space-y-5 flex flex-col h-full text-foreground pb-10">
       {/* Breadcrumb */}
@@ -56,10 +98,10 @@ export default function ObligationExplorer() {
           <p className="text-muted-foreground text-sm">Explore, search, and analyze your regulatory obligations across all applicable regulations.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button onClick={() => toast.success("Export started: Obligations_Report.csv")} className="flex items-center gap-2 border border-indigo text-indigo px-4 py-2 rounded text-sm font-medium hover:bg-indigo/5 transition-colors">
+          <button onClick={handleExportCSV} className="flex items-center gap-2 border border-indigo text-indigo px-4 py-2 rounded text-sm font-medium hover:bg-indigo/5 transition-colors">
             <Download className="w-4 h-4" /> Export
           </button>
-          <button onClick={() => toast.info("Opening custom view builder...")} className="flex items-center gap-2 bg-indigo hover:bg-indigo/90 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
+          <button onClick={() => setIsViewOpen(true)} className="flex items-center gap-2 bg-indigo hover:bg-indigo/90 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
             <Plus className="w-4 h-4" /> Custom View
           </button>
         </div>
@@ -286,6 +328,55 @@ export default function ObligationExplorer() {
           </div>
         )}
       </div>
+
+      {/* Custom View Builder Modal */}
+      {isViewOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-6 w-full max-w-lg">
+            <h2 className="text-xl font-bold font-serif mb-4 flex items-center gap-2"><Filter className="w-5 h-5 text-indigo"/> Build Custom View</h2>
+            <form onSubmit={handleSaveView}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">View Name</label>
+                  <input 
+                    type="text" 
+                    value={viewName}
+                    onChange={(e) => setViewName(e.target.value)}
+                    className="w-full border border-border px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-indigo" 
+                    placeholder="e.g., High Impact HR Obligations" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Filters</label>
+                  <div className="space-y-3 border border-border p-3 rounded bg-slate-50">
+                    <div className="flex gap-2">
+                      <select className="flex-1 border border-border px-2 py-1.5 text-sm rounded">
+                        <option>Department</option>
+                        <option>Impact</option>
+                        <option>Status</option>
+                      </select>
+                      <select className="flex-1 border border-border px-2 py-1.5 text-sm rounded">
+                        <option>Equals</option>
+                        <option>Contains</option>
+                      </select>
+                      <input type="text" className="flex-1 border border-border px-2 py-1.5 text-sm rounded" placeholder="Value" />
+                    </div>
+                    <button type="button" className="text-indigo text-xs font-semibold flex items-center gap-1"><Plus className="w-3 h-3"/> Add Filter Condition</button>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <button type="button" onClick={() => setIsViewOpen(false)} className="px-4 py-2 text-sm font-medium border border-border rounded hover:bg-secondary transition-colors">
+                  Cancel
+                </button>
+                <button type="submit" className="px-4 py-2 text-sm font-medium bg-indigo text-white rounded hover:bg-indigo/90 transition-colors">
+                  Save View
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
