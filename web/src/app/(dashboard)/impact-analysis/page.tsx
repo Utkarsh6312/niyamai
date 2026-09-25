@@ -10,7 +10,7 @@ import {
 import Link from "next/link";
 import { toast } from "sonner";
 import { RiskBadge } from "@/components/ui/badges";
-import { rbiKycAnalysisFindings, rbiSummaryStats, RbiFinding } from "@/lib/data/rbi-analysis-data";
+import { rbiKycAnalysisFindings, rbiSummaryStats, rbi24AnalysisFindings, rbi24SummaryStats, RbiFinding } from "@/lib/data/rbi-analysis-data";
 
 // ── AI pipeline stages with detailed real-looking log lines ──────────────────
 const PIPELINE_STAGES = [
@@ -177,6 +177,11 @@ export default function ImpactAnalysis() {
   const [filterDept, setFilterDept] = useState("All");
   const [filterImpact, setFilterImpact] = useState("All");
   const [filterStatus, setFilterStatus] = useState("All");
+  const [isSummarized, setIsSummarized] = useState(false);
+
+  const isRbi24 = uploadedFileName.includes("24");
+  const currentFindings = isRbi24 ? rbi24AnalysisFindings : rbiKycAnalysisFindings;
+  const currentStats = isRbi24 ? rbi24SummaryStats : rbiSummaryStats;
 
   useEffect(() => {
     // Load persisted state
@@ -193,7 +198,7 @@ export default function ImpactAnalysis() {
       .then((actions: any[]) => {
         const actionMap: Record<string, boolean> = {};
         actions.forEach(a => {
-          const match = rbiKycAnalysisFindings.find(f => f.recommendedAction.actionCode === a.id);
+          const match = currentFindings.find(f => f.recommendedAction.actionCode === a.id);
           if (match) actionMap[match.id] = true;
         });
         setCreatedActionIds(actionMap);
@@ -237,11 +242,15 @@ export default function ImpactAnalysis() {
           localStorage.setItem("niyamai_has_analyzed", "true");
           localStorage.setItem("niyamai_file_name", fileName);
 
+          const _is24 = fileName.includes("24");
+          const _findings = _is24 ? rbi24AnalysisFindings : rbiKycAnalysisFindings;
+          const _stats = _is24 ? rbi24SummaryStats : rbiSummaryStats;
+
           toast.success(`✅ Analysis of "${fileName}" complete!`, {
-            description: "14 amendments detected · 5 obligations extracted · 5 remediation actions created."
+            description: `${_stats.totalMaterialChanges} amendments detected · ${_findings.length} obligations extracted · ${_findings.length} remediation actions created.`
           });
 
-          for (const finding of rbiKycAnalysisFindings) {
+          for (const finding of _findings) {
             try {
               await fetch("/api/actions", {
                 method: "POST",
@@ -261,7 +270,7 @@ export default function ImpactAnalysis() {
               setCreatedActionIds(prev => ({ ...prev, [finding.id]: true }));
             } catch {}
           }
-          toast.success("📋 5 guidelines pushed to Action Center!");
+          toast.success(`📋 ${_findings.length} guidelines pushed to Action Center!`);
         }, 400);
         return;
       }
@@ -594,7 +603,7 @@ export default function ImpactAnalysis() {
                 <FileText className="w-6 h-6 text-indigo" />
               </div>
               <div>
-                <span className="text-2xl font-extrabold text-foreground">{rbiSummaryStats.totalMaterialChanges}</span>
+                <span className="text-2xl font-extrabold text-foreground">{currentStats.totalMaterialChanges}</span>
                 <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Material Changes Detected</p>
                 <span className="text-[10px] text-teal font-semibold">Master Direction 2025 Updates</span>
               </div>
@@ -604,7 +613,7 @@ export default function ImpactAnalysis() {
                 <ListOrdered className="w-6 h-6 text-blue-600" />
               </div>
               <div>
-                <span className="text-2xl font-extrabold text-foreground">{rbiSummaryStats.obligationsExtracted}</span>
+                <span className="text-2xl font-extrabold text-foreground">{currentStats.obligationsExtracted}</span>
                 <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Obligations Extracted</p>
                 <span className="text-[10px] text-blue-600 font-semibold">100% Citing Verbatim Clauses</span>
               </div>
@@ -614,7 +623,7 @@ export default function ImpactAnalysis() {
                 <ShieldAlert className="w-6 h-6 text-red" />
               </div>
               <div>
-                <span className="text-2xl font-extrabold text-red">{rbiSummaryStats.criticalGaps} Critical Gaps</span>
+                <span className="text-2xl font-extrabold text-red">{currentStats.criticalGaps} Critical Gaps</span>
                 <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Aarohan Policy Deficiencies</p>
                 <span className="text-[10px] text-red font-semibold">+ 2 High Risk Gaps</span>
               </div>
@@ -624,7 +633,7 @@ export default function ImpactAnalysis() {
                 <Users className="w-6 h-6 text-purple-600" />
               </div>
               <div>
-                <span className="text-2xl font-extrabold text-foreground">{rbiSummaryStats.affectedDepartments.length}</span>
+                <span className="text-2xl font-extrabold text-foreground">{currentStats.affectedDepartments.length}</span>
                 <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Bank Units Impacted</p>
                 <span className="text-[10px] text-purple-600 font-semibold">Ops, Compliance, IT, Risk, Legal</span>
               </div>
@@ -632,42 +641,41 @@ export default function ImpactAnalysis() {
           </div>
 
           {/* Filter Bar */}
-          <div className="bg-card border-[3px] border-black rounded-none shadow-[4px_4px_0_0_#000000] p-4 flex flex-col md:flex-row items-stretch md:items-center gap-3">
-            <div className="relative flex-1">
-              <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text" value={search} onChange={e => setSearch(e.target.value)}
-                placeholder="Search obligations, clauses, policies, or gaps..."
-                className="w-full pl-9 pr-3 py-1.5 text-sm border-2 border-black rounded-none bg-background focus:outline-none"
-              />
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
+          <div className="bg-card border-[3px] border-black rounded-none shadow-[4px_4px_0_0_#000000] p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+            <div className="flex items-center gap-3 flex-1 flex-wrap">
+              <div className="relative flex-1 min-w-[200px]">
+                <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text" value={search} onChange={e => setSearch(e.target.value)}
+                  placeholder="Search obligations, clauses..."
+                  className="w-full pl-9 pr-3 py-1.5 text-sm border-2 border-black rounded-none bg-background focus:outline-none"
+                />
+              </div>
               <select value={filterDept} onChange={e => setFilterDept(e.target.value)} className="px-3 py-1.5 text-xs font-bold border-2 border-black rounded-none bg-background outline-none">
                 <option value="All">All Departments</option>
                 <option value="Operations">Operations</option>
-                <option value="KYC Compliance">KYC Compliance</option>
-                <option value="Risk Management">Risk Management</option>
-                <option value="IT & Systems">IT & Systems</option>
-                <option value="Legal">Legal</option>
+                <option value="KYC Compliance">KYC</option>
+                <option value="Risk Management">Risk</option>
+                <option value="IT & Systems">IT</option>
               </select>
               <select value={filterImpact} onChange={e => setFilterImpact(e.target.value)} className="px-3 py-1.5 text-xs font-bold border-2 border-black rounded-none bg-background outline-none">
                 <option value="All">All Severities</option>
                 <option value="Critical">Critical</option>
                 <option value="High">High</option>
-                <option value="Medium">Medium</option>
-              </select>
-              <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="px-3 py-1.5 text-xs font-bold border-2 border-black rounded-none bg-background outline-none">
-                <option value="All">All Match States</option>
-                <option value="GAP">GAP</option>
-                <option value="PARTIAL MATCH">PARTIAL MATCH</option>
-                <option value="FULL MATCH">FULL MATCH</option>
               </select>
               {(search || filterDept !== "All" || filterImpact !== "All" || filterStatus !== "All") && (
                 <button onClick={() => { setSearch(""); setFilterDept("All"); setFilterImpact("All"); setFilterStatus("All"); }} className="text-xs font-bold text-indigo hover:underline px-2">
-                  Reset Filters
+                  Reset
                 </button>
               )}
             </div>
+            
+            <button 
+               onClick={() => setIsSummarized(!isSummarized)} 
+               className="flex items-center justify-center gap-1.5 px-6 py-2.5 bg-indigo text-white font-bold text-sm border-2 border-black shadow-[3px_3px_0_0_#000000] hover:bg-indigo/90 transition-transform active:translate-x-0.5 active:translate-y-0.5 shrink-0"
+            >
+               {isSummarized ? "View in Detail" : "Summarize"}
+            </button>
           </div>
 
           {/* Findings */}
@@ -683,7 +691,33 @@ export default function ImpactAnalysis() {
 
               return (
                 <div key={finding.id} className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] overflow-hidden">
-                  {/* Finding Header */}
+                  {isSummarized ? (
+                     <div className="p-8 space-y-6">
+                        <div className="flex items-center gap-4">
+                           <span className="px-3 py-1.5 text-lg font-bold border-2 border-black bg-indigo text-white shadow-[2px_2px_0_0_#000000]">{finding.obligationCode}</span>
+                           <span className={`px-3 py-1.5 text-lg font-bold border-2 border-black shadow-[2px_2px_0_0_#000000] ${finding.matchStatus === "GAP" ? "bg-red text-white" : finding.matchStatus === "PARTIAL MATCH" ? "bg-amber text-black" : "bg-teal text-white"}`}>
+                             {finding.matchStatus}
+                           </span>
+                        </div>
+                        <h3 className="font-serif text-3xl font-extrabold text-foreground leading-snug">{finding.obligationTitle}</h3>
+                        <div className="text-xl text-muted-foreground font-medium leading-relaxed italic border-l-4 border-indigo pl-6 py-2">
+                           {finding.matchStatus === "GAP" ? finding.gapDetails : finding.matchExplanation}
+                        </div>
+                        <div className="mt-6 pt-6 border-t-2 border-black flex flex-col md:flex-row md:items-center justify-between gap-4">
+                           <div className="text-xl font-bold text-indigo flex items-center gap-2">
+                              👉 Recommended Action: {finding.recommendedAction.title}
+                           </div>
+                           <button
+                              onClick={() => handleCreateAction(finding)}
+                              disabled={isActionCreated || isCreating}
+                              className={`px-6 py-3 font-bold text-lg border-2 border-black shadow-[4px_4px_0_0_#000000] transition-transform ${isActionCreated ? "bg-teal text-white cursor-default" : "bg-indigo text-white hover:bg-indigo/90 active:translate-x-0.5 active:translate-y-0.5"}`}
+                            >
+                              {isActionCreated ? "✓ In Action Center" : isCreating ? "Pushing..." : "Add to Action Center"}
+                           </button>
+                        </div>
+                     </div>
+                  ) : (
+                    <>
                   <div className="p-5 border-b-2 border-black bg-secondary/15 flex flex-col md:flex-row md:items-center justify-between gap-3">
                     <div className="flex items-start gap-3">
                       <span className="font-mono text-xs font-extrabold px-2.5 py-1 bg-indigo text-white border border-black shadow-[2px_2px_0_0_#000000] shrink-0">
@@ -711,31 +745,31 @@ export default function ImpactAnalysis() {
                   {/* Finding Body */}
                   <div className="p-5 space-y-4">
                     {/* Verbatim Evidence */}
-                    <div className="bg-secondary/25 border-l-4 border-l-indigo border border-border p-4 text-xs space-y-1.5">
+                    <div className="bg-secondary/25 border-l-4 border-l-indigo border border-border p-4 space-y-2">
                       <div className="flex items-center justify-between font-bold text-indigo uppercase tracking-wider text-[10px]">
                         <span>Source Regulatory Excerpt (from {uploadedFileName})</span>
                         <span>PDF {finding.sourcePageLabel}</span>
                       </div>
-                      <blockquote className="italic text-foreground/90 font-serif leading-relaxed">
+                      <blockquote className="italic text-foreground/90 font-serif text-lg leading-relaxed">
                         "{finding.verbatimEvidence}"
                       </blockquote>
                     </div>
 
                     {/* Policy Comparison & Gap */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                      <div className="border border-border p-3.5 bg-background space-y-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="border border-border p-4 bg-background space-y-3">
                         <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
                           <span>Aarohan Bank Policy Evaluated</span>
                           <span className="text-indigo font-bold">{finding.relevantPolicySection}</span>
                         </div>
                         <p className="font-bold text-foreground text-sm">{finding.affectedPolicy}</p>
-                        <p className="text-muted-foreground leading-relaxed">{finding.matchExplanation}</p>
+                        <p className="text-muted-foreground leading-relaxed italic font-serif text-lg">{finding.matchExplanation}</p>
                       </div>
-                      <div className="border border-red/30 bg-red/5 p-3.5 space-y-2">
+                      <div className="border border-red/30 bg-red/5 p-4 space-y-3">
                         <div className="text-[10px] font-extrabold uppercase tracking-wider text-red flex items-center gap-1">
                           <AlertTriangle className="w-3.5 h-3.5" /> Required Change / Gap
                         </div>
-                        <p className="text-foreground leading-relaxed font-medium">{finding.gapDetails}</p>
+                        <p className="text-foreground leading-relaxed font-medium italic font-serif text-lg border-l-4 border-indigo pl-4">{finding.gapDetails}</p>
                       </div>
                     </div>
 
@@ -814,7 +848,9 @@ export default function ImpactAnalysis() {
                         </button>
                       </div>
                     </div>
-                  </div>
+                    </div>
+                  </>
+                  )}
                 </div>
               );
             })}

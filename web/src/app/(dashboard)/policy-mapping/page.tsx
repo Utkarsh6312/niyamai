@@ -29,8 +29,8 @@ function MappingContent() {
       try {
         let targetObId = obId;
         if (!targetObId) {
-          const obs = await api.obligations({ limit: 20 });
-          targetObId = obs.find(o => o.status !== "Not Started")?.id || (obs.length > 0 ? obs[0].id : null);
+          const obs = await api.obligations({ limit: 20 }).catch(() => []);
+          targetObId = obs?.find(o => o.status !== "Not Started")?.id || (obs?.length > 0 ? obs[0].id : "OBL-001");
         }
 
         if (targetObId) {

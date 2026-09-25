@@ -306,3 +306,117 @@ export const rbiSummaryStats = {
     "Legal"
   ]
 };
+
+
+export const rbi24AnalysisFindings: RbiFinding[] = [
+  {
+    id: "RBI-DL-001",
+    obligationCode: "OBL-DL-201",
+    obligationTitle: "Direct Bank-to-Bank Fund Routing without LSP Pool Accounts",
+    obligationDescription: "All loan disbursements and repayments must be executed directly between the bank accounts of the borrower and the Regulated Entity (RE), prohibiting any pass-through or pool accounts of Lending Service Providers (LSPs).",
+    sourceDocument: "RBI Guidelines on Digital Lending, 2024",
+    sourcePage: 12,
+    sourcePageLabel: "Page 12, Section II",
+    sourceClause: "Section II, Paragraph 4.1",
+    verbatimEvidence: "All loan disbursements and repayments are required to be executed only between the bank accounts of borrower and the RE without any pass-through/ pool account of the LSP or any third party.",
+    confidenceScore: 99.9,
+
+    affectedPolicy: "Aarohan Bank Digital Partnership Framework v1.2",
+    relevantPolicySection: "Section 3.1 (LSP Settlement & Fund Flows)",
+    matchStatus: "GAP",
+    matchExplanation: "The current framework allows LSPs to collect borrower repayments in an escrow pool account before weekly settlement to the bank.",
+    gapDetails: "Total absence of direct API hooks for repayment collection from the borrower directly into the bank's core GL. Ongoing violation of fund flow mandates.",
+
+    riskLevel: "Critical",
+    regulatoryImpact: "Direct statutory violation. RBI may immediately halt digital loan originations through partner LSPs.",
+    operationalImpact: "Requires complete overhaul of API integrations with Lending Service Providers to bypass their nodal accounts.",
+    customerImpact: "Borrowers must re-register NACH mandates directly to Aarohan Bank instead of the LSP app.",
+    riskConfidence: 99.5,
+
+    departments: ["Product & Engineering", "Legal", "Operations"],
+
+    timelineType: "Regulatory timeline specified by source",
+    timelineDate: "2024-11-30",
+    timelineDisplay: "November 30, 2024 (Mandatory Statutory Deadline)",
+
+    recommendedAction: {
+      id: "ACT-DL-201",
+      actionCode: "ACT-2024-01",
+      title: "Audit all existing LSP integrations to ensure zero pass-through fund flows",
+      description: "Amend Digital Partnership Framework. Disable LSP nodal accounts and migrate all digital loan disbursements and NACH repayment collections directly to the Bank's GL accounts.",
+      affectedPolicy: "Aarohan Bank Digital Partnership Framework v1.2",
+      department: "Product & Engineering",
+      owner: "Amitava Roy (CTO)",
+      ownerInitials: "AR",
+      priority: "Critical",
+      dueDate: "Nov 30, 2024",
+      status: "Pending"
+    }
+  },
+  {
+    id: "RBI-DL-002",
+    obligationCode: "OBL-DL-205",
+    obligationTitle: "Standardized Key Fact Statement (KFS) Issuance",
+    obligationDescription: "REs must provide a standardized Key Fact Statement (KFS) to the borrower before the execution of the loan contract, detailing all-in APR, cooling-off period, and grievance redressal mechanism.",
+    sourceDocument: "RBI Guidelines on Digital Lending, 2024",
+    sourcePage: 15,
+    sourcePageLabel: "Page 15, Section II",
+    sourceClause: "Section II, Paragraph 4.2",
+    verbatimEvidence: "A standardized Key Fact Statement (KFS) must be provided to the borrower before executing the contract for all digital lending products. The KFS shall contain the Annual Percentage Rate (APR), the cooling-off period, and details of the grievance redressal officer.",
+    confidenceScore: 99.2,
+
+    affectedPolicy: "Aarohan Bank Digital Product Origination Policy v2.0",
+    relevantPolicySection: "Section 5.3 (Customer Disclosures)",
+    matchStatus: "PARTIAL MATCH",
+    matchExplanation: "The current policy mandates showing an interest rate summary, but does not calculate the annualized APR inclusive of processing fees, nor does it mention a cooling-off period.",
+    gapDetails: "Missing APR calculation engine. Missing cooling-off period clause in the terms and conditions.",
+
+    riskLevel: "High",
+    regulatoryImpact: "Penalties for non-transparent pricing under Fair Practices Code.",
+    operationalImpact: "Frontend UI/UX of the mobile banking app and LSP partner apps must be updated to insert a mandatory KFS acceptance screen.",
+    customerImpact: "Borrowers gain full visibility into the true cost of credit and get a penalty-free exit window.",
+    riskConfidence: 98.4,
+
+    departments: ["Product & Engineering", "Compliance", "Customer Experience"],
+
+    timelineType: "Internal Recommended Target",
+    timelineDate: "2024-10-15",
+    timelineDisplay: "October 15, 2024 (Internal Sprint Target)",
+
+    recommendedAction: {
+      id: "ACT-DL-205",
+      actionCode: "ACT-2024-02",
+      title: "Deploy standardized KFS generation modules across all digital loan origination journeys",
+      description: "Build an APR calculator API and mandate KFS generation and borrower acceptance (via OTP) prior to loan contract generation.",
+      affectedPolicy: "Aarohan Bank Digital Product Origination Policy v2.0",
+      department: "Product & Engineering",
+      owner: "Neha Sharma (Head of Digital)",
+      ownerInitials: "NS",
+      priority: "High",
+      dueDate: "Oct 15, 2024",
+      status: "Pending"
+    }
+  }
+];
+
+export const rbi24SummaryStats = {
+  documentTitle: "RBI Guidelines on Digital Lending, 2024",
+  amendmentReference: "DOR.CRE.REC.66/21.07.001/2023-24",
+  issuingAuthority: "Reserve Bank of India",
+  totalMaterialChanges: 8,
+  obligationsExtracted: 2,
+  criticalGaps: 1,
+  highGaps: 1,
+  partialMatches: 1,
+  policiesAnalyzed: [
+    "Aarohan Bank Digital Partnership Framework v1.2",
+    "Aarohan Bank Digital Product Origination Policy v2.0"
+  ],
+  affectedDepartments: [
+    "Product & Engineering",
+    "Legal",
+    "Operations",
+    "Compliance",
+    "Customer Experience"
+  ]
+};

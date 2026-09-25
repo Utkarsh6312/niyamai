@@ -17,7 +17,35 @@ export default function AIAssistant() {
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [activeTab, setActiveTab] = useState("Summary");
+  const [currentDoc, setCurrentDoc] = useState<"RBI25" | "RBI24">("RBI25");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.name.includes("24")) {
+        setCurrentDoc("RBI24");
+        setMessages(prev => [...prev, {
+          id: Date.now().toString(),
+          role: "assistant",
+          content: "I have successfully analyzed the uploaded document 'RBI Digital Lending Guidelines 2024'. How can I help you?",
+          time: new Date().toLocaleTimeString([], {hour: "2-digit", minute:"2-digit"})
+        }]);
+      } else {
+        setCurrentDoc("RBI25");
+        setMessages(prev => [...prev, {
+          id: Date.now().toString(),
+          role: "assistant",
+          content: "I have successfully analyzed the uploaded document 'RBI KYC Master Direction 2026'. How can I help you?",
+          time: new Date().toLocaleTimeString([], {hour: "2-digit", minute:"2-digit"})
+        }]);
+      }
+      
+      // Reset input so the same file can be selected again
+      e.target.value = '';
+    }
+  };
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -73,16 +101,32 @@ export default function AIAssistant() {
       const formattedPrompt = apiMessages.map(m => `${m.role === 'assistant' ? 'Assistant' : 'User'}: ${m.content}`).join('\n') + '\nAssistant:';
 
       const lowerPrompt = messageText.toLowerCase();
+      
+      let effectiveDoc = currentDoc;
+      if (lowerPrompt.includes("24") || lowerPrompt.includes("2024")) {
+        effectiveDoc = "RBI24";
+        setCurrentDoc("RBI24");
+      } else if (lowerPrompt.includes("25") || lowerPrompt.includes("2025") || lowerPrompt.includes("2026")) {
+        effectiveDoc = "RBI25";
+        setCurrentDoc("RBI25");
+      }
+
       let responseText = "";
 
       try {
+        const docContextStr = effectiveDoc === "RBI24" 
+          ? "Context: The user is discussing 'RBI Digital Lending Guidelines 2024'. Focus strictly on 2024 regulations.\\n"
+          : "Context: The user is discussing 'RBI KYC Master Direction 2025'. Focus strictly on 2025/2026 regulations.\\n";
+          
+        const finalPrompt = docContextStr + formattedPrompt;
+
         // Call our secure backend API route
         const response = await fetch('/api/chat', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ prompt: formattedPrompt }),
+          body: JSON.stringify({ prompt: finalPrompt }),
         });
 
         if (response.ok) {
@@ -100,42 +144,57 @@ export default function AIAssistant() {
         await new Promise(resolve => setTimeout(resolve, 1500));
         let mockOutput = "I am currently running in offline mock mode because the Fal AI API call failed. To enable live AI responses, please make sure your `FAL_KEY` is set in the `.env.local` file.";
         
-        if (lowerPrompt === "hello" || lowerPrompt === "hi" || lowerPrompt === "hey") {
-           mockOutput = "Hello! I am NiyamAI. How can I assist you with your compliance workflows today?";
-        } else if (lowerPrompt.includes("my name is") || lowerPrompt.includes("i am") || lowerPrompt.includes("i'm")) {
-          let userName = "";
-          if (lowerPrompt.includes("my name is")) {
-             userName = messageText.toLowerCase().split("my name is")[1].trim().split(" ")[0];
-          } else if (lowerPrompt.includes("i am")) {
-             userName = messageText.toLowerCase().split("i am")[1].trim().split(" ")[0];
-          } else if (lowerPrompt.includes("i'm")) {
-             userName = messageText.toLowerCase().split("i'm")[1].trim().split(" ")[0];
+        if (effectiveDoc === "RBI24") {
+          // RBI 24 Mock Responses
+          if (lowerPrompt === "hello" || lowerPrompt === "hi" || lowerPrompt === "hey") {
+             mockOutput = "Hello! I am NiyamAI. I have analyzed the RBI Digital Lending Guidelines 2024. How can I assist you?";
+          } else if (lowerPrompt.includes("action") || lowerPrompt.includes("suggest") || lowerPrompt.includes("timeline")) {
+             mockOutput = "**Suggested Action Items for RBI 2024 (Digital Lending):**\n\n1. **Product & Engineering**: Audit existing LSP integrations to ensure zero pass-through fund flows.\n2. **Legal & Compliance**: Deploy standardized KFS generation modules across all digital loan origination journeys.\n3. **Grievance**: Appoint a nodal grievance redressal officer for LSPs.";
+          } else if (lowerPrompt.includes("impact") || lowerPrompt.includes("department") || lowerPrompt.includes("affected")) {
+             mockOutput = "**Departmental Impact (Digital Lending):**\n\n- **Product & Engineering**: Critical Impact. Requires complete overhaul of API integrations with Lending Service Providers to bypass nodal accounts.\n- **Legal & Compliance**: High Impact. Must draft new LSP contracts and verify explicit consent forms.";
+          } else {
+             // Catch-all for summarize, analyze, or any other question regarding RBI 24
+             mockOutput = "**Summary of RBI Digital Lending Guidelines 2024:**\n\n1. **Direct Bank-to-Bank Fund Routing**: Strict prohibition of third-party pass-through or LSP pool accounts. All loan disbursements and repayments must be executed directly between the borrower and Regulated Entity.\n2. **Key Fact Statement (KFS)**: Mandatory standardized KFS must be presented to the borrower before loan execution.\n3. **Data Privacy**: Explicit borrower consent is required for any data collection by Lending Service Providers.";
           }
-          userName = userName.replace(/[^a-zA-Z]/g, '');
-          if (userName) userName = userName.charAt(0).toUpperCase() + userName.slice(1);
-          mockOutput = `Nice to meet you, ${userName}! How can I help you with your compliance tasks today?`;
-        } else if (lowerPrompt.includes("v-cip") || lowerPrompt.includes("video") || lowerPrompt.includes("remote")) {
-           mockOutput = "**V-CIP (Video based Customer Identification Process) Guidelines (Based on RBI KYC Master Direction):**\n\n1. **Infrastructure**: Must be housed in RE\'s own premises/secured network. End-to-end encryption required.\n2. **Checks**: Must include live GPS geo-tagging, date-time stamp, and face liveness/spoof detection.\n3. **Procedure**: Requires clear audio-video, Aadhaar offline/OTP verification. Disruption/pausing shouldn\'t create multiple files.\n4. **Audit**: Accounts opened via V-CIP are operational only after concurrent audit.";
-        } else if (lowerPrompt.includes("market risk") || lowerPrompt.includes("capital charge") || lowerPrompt.includes("rwa")) {
-           mockOutput = "**Market Risk Capital Requirements (Based on RBI 2026 Directions):**\n\n- **Specific Risk**: Central Govt (0%), State Govt (0.25% - 1.6% based on maturity), Equity Risk (9%).\n- **Foreign Exchange Risk**: 9% capital charge on the overall Net Open Position (NOP). Includes gold.\n- **Internal Risk Transfers**: Hedges from banking book to trading book only recognized if matched exactly with an external third-party hedge.";
-        } else if (lowerPrompt.includes("trading book") || lowerPrompt.includes("banking book") || lowerPrompt.includes("reclassify")) {
-           mockOutput = "**Boundary between Banking Book and Trading Book:**\n\n- **Trading Book**: Includes \'Held for Trading\' (HFT) instruments.\n- **Reclassification**: Strictly restricted. Cannot be done for regulatory arbitrage. If reclassification reduces capital requirement, the difference must be maintained as a disclosed Pillar 1 capital surcharge.";
-        } else if (lowerPrompt.includes("periodic") || lowerPrompt.includes("updation")) {
-           mockOutput = "**Periodic Updation of KYC:**\n\n- **High Risk**: At least once in every 2 years.\n- **Medium Risk**: At least once in every 8 years.\n- **Low Risk**: At least once in every 10 years.\n\n*Note*: For low-risk individuals with no change in info, a self-declaration via email/SMS/ATM is sufficient.";
-        } else if (lowerPrompt.includes("small account")) {
-           mockOutput = "**Small Account Limitations:**\n\n- Aggregate credits in a financial year cannot exceed ₹1 lakh.\n- Aggregate withdrawals/transfers cannot exceed ₹10,000 per month.\n- Balance at any point cannot exceed ₹50,000.\n*Exemptions apply for Government grants/welfare benefits.*";
-        } else if (lowerPrompt.includes("wire transfer") || lowerPrompt.includes("cross border")) {
-           mockOutput = "**Wire Transfer KYC Requirements:**\n\n- **Cross-border**: Must always be accompanied by accurate originator and beneficiary information.\n- **Domestic**: If ₹50,000 and above for a non-account holder, must include full originator and beneficiary details.";
-        } else if (lowerPrompt.includes("foreign exchange") || lowerPrompt.includes("forex") || lowerPrompt.includes("net open position") || lowerPrompt.includes("nop")) {
-           mockOutput = "**Foreign Exchange Risk & Net Open Position (NOP):**\n\n- Capital requirement is 9% of the overall NOP.\n- **Structural Exemption**: REs can exclude certain structural foreign currency investments (like overseas branches/subsidiaries) from NOP to neutralize capital ratio sensitivity, provided it\'s held for at least 6 months.";
-        } else if (lowerPrompt.includes("summarize") || lowerPrompt.includes("summary") || lowerPrompt.includes("teach") || lowerPrompt.includes("analyze")) {
-           mockOutput = "**Summary of Recent RBI Circulars:**\n\n**1. KYC Master Direction (Updated Aug 2025)**: Mandates strict V-CIP infrastructure (liveness checks, geo-tagging), defines periodic updation timelines (2/8/10 years based on risk), and sets strict wire transfer reporting rules.\n\n**2. Market Risk Capital Requirements (Sep 2026)**: Establishes a firm boundary between Trading and Banking books, sets 9% capital charge for forex/equity risk, and details treatment for internal risk transfers and options (Delta-plus/Scenario approaches).";
-        } else if (lowerPrompt.includes("action") || lowerPrompt.includes("suggest") || lowerPrompt.includes("timeline")) {
-           mockOutput = "**Suggested Action Items for Aarohan Bank:**\n\n1. **Policy Update (KYC)**: Integrate new V-CIP geo-tagging and liveness check requirements into Customer Acceptance Policy (Due: Next Board Meeting).\n2. **IT Infrastructure**: Upgrade video verification servers to ensure end-to-end encryption and prevent spoofed IPs (Due: Q3).\n3. **Risk Management**: Recalculate Net Open Position (NOP) for forex to include 9% capital charge and identify structural exemptions (Due: Immediate).";
-        } else if (lowerPrompt.includes("impact") && !lowerPrompt.includes("department") && !lowerPrompt.includes("affected")) {
-           mockOutput = "**Key Compliance Impacts:**\n\n1. **Capital Requirements**: Increased capital charge (9%) on forex and equity positions.\n2. **KYC & Onboarding**: Mandatory integration of liveness checks and geo-tagging for V-CIP.\n3. **Data Localization**: Stricter audit trails and localized servers for video KYC records.\n4. **Account Limitations**: Caps enforced on 'Small Accounts' (e.g. ₹50k balance limit).";
-        } else if (lowerPrompt.includes("affected") || lowerPrompt.includes("department")) {
-           mockOutput = "**Departmental Impact Analysis:**\n\n- **Compliance & Operations**: High Impact. Must implement new V-CIP audit trails and monitor Small Account limits (₹1L credit/₹50k balance).\n- **Risk Management**: High Impact. Must adjust capital calculations for Trading Book reclassifications and apply 9% charge to Equity/Forex NOP.\n- **IT & Cybersecurity**: High Impact. Required to secure V-CIP infrastructure and ensure data localization.";
+        } else {
+          // RBI 25 Mock Responses (Original logic)
+          if (lowerPrompt === "hello" || lowerPrompt === "hi" || lowerPrompt === "hey") {
+             mockOutput = "Hello! I am NiyamAI. How can I assist you with your compliance workflows today?";
+          } else if (lowerPrompt.includes("my name is") || lowerPrompt.includes("i am") || lowerPrompt.includes("i'm")) {
+            let userName = "";
+            if (lowerPrompt.includes("my name is")) {
+               userName = messageText.toLowerCase().split("my name is")[1].trim().split(" ")[0];
+            } else if (lowerPrompt.includes("i am")) {
+               userName = messageText.toLowerCase().split("i am")[1].trim().split(" ")[0];
+            } else if (lowerPrompt.includes("i'm")) {
+               userName = messageText.toLowerCase().split("i'm")[1].trim().split(" ")[0];
+            }
+            userName = userName.replace(/[^a-zA-Z]/g, '');
+            if (userName) userName = userName.charAt(0).toUpperCase() + userName.slice(1);
+            mockOutput = `Nice to meet you, ${userName}! How can I help you with your compliance tasks today?`;
+          } else if (lowerPrompt.includes("v-cip") || lowerPrompt.includes("video") || lowerPrompt.includes("remote")) {
+             mockOutput = "**V-CIP (Video based Customer Identification Process) Guidelines (Based on RBI KYC Master Direction):**\n\n1. **Infrastructure**: Must be housed in RE\'s own premises/secured network. End-to-end encryption required.\n2. **Checks**: Must include live GPS geo-tagging, date-time stamp, and face liveness/spoof detection.\n3. **Procedure**: Requires clear audio-video, Aadhaar offline/OTP verification. Disruption/pausing shouldn\'t create multiple files.\n4. **Audit**: Accounts opened via V-CIP are operational only after concurrent audit.";
+          } else if (lowerPrompt.includes("market risk") || lowerPrompt.includes("capital charge") || lowerPrompt.includes("rwa")) {
+             mockOutput = "**Market Risk Capital Requirements (Based on RBI 2026 Directions):**\n\n- **Specific Risk**: Central Govt (0%), State Govt (0.25% - 1.6% based on maturity), Equity Risk (9%).\n- **Foreign Exchange Risk**: 9% capital charge on the overall Net Open Position (NOP). Includes gold.\n- **Internal Risk Transfers**: Hedges from banking book to trading book only recognized if matched exactly with an external third-party hedge.";
+          } else if (lowerPrompt.includes("trading book") || lowerPrompt.includes("banking book") || lowerPrompt.includes("reclassify")) {
+             mockOutput = "**Boundary between Banking Book and Trading Book:**\n\n- **Trading Book**: Includes \'Held for Trading\' (HFT) instruments.\n- **Reclassification**: Strictly restricted. Cannot be done for regulatory arbitrage. If reclassification reduces capital requirement, the difference must be maintained as a disclosed Pillar 1 capital surcharge.";
+          } else if (lowerPrompt.includes("periodic") || lowerPrompt.includes("updation")) {
+             mockOutput = "**Periodic Updation of KYC:**\n\n- **High Risk**: At least once in every 2 years.\n- **Medium Risk**: At least once in every 8 years.\n- **Low Risk**: At least once in every 10 years.\n\n*Note*: For low-risk individuals with no change in info, a self-declaration via email/SMS/ATM is sufficient.";
+          } else if (lowerPrompt.includes("small account")) {
+             mockOutput = "**Small Account Limitations:**\n\n- Aggregate credits in a financial year cannot exceed ₹1 lakh.\n- Aggregate withdrawals/transfers cannot exceed ₹10,000 per month.\n- Balance at any point cannot exceed ₹50,000.\n*Exemptions apply for Government grants/welfare benefits.*";
+          } else if (lowerPrompt.includes("wire transfer") || lowerPrompt.includes("cross border")) {
+             mockOutput = "**Wire Transfer KYC Requirements:**\n\n- **Cross-border**: Must always be accompanied by accurate originator and beneficiary information.\n- **Domestic**: If ₹50,000 and above for a non-account holder, must include full originator and beneficiary details.";
+          } else if (lowerPrompt.includes("foreign exchange") || lowerPrompt.includes("forex") || lowerPrompt.includes("net open position") || lowerPrompt.includes("nop")) {
+             mockOutput = "**Foreign Exchange Risk & Net Open Position (NOP):**\n\n- Capital requirement is 9% of the overall NOP.\n- **Structural Exemption**: REs can exclude certain structural foreign currency investments (like overseas branches/subsidiaries) from NOP to neutralize capital ratio sensitivity, provided it\'s held for at least 6 months.";
+          } else if (lowerPrompt.includes("summarize") || lowerPrompt.includes("summary") || lowerPrompt.includes("teach") || lowerPrompt.includes("analyze")) {
+             mockOutput = "**Summary of Recent RBI Circulars:**\n\n**1. KYC Master Direction (Updated Aug 2025)**: Mandates strict V-CIP infrastructure (liveness checks, geo-tagging), defines periodic updation timelines (2/8/10 years based on risk), and sets strict wire transfer reporting rules.\n\n**2. Market Risk Capital Requirements (Sep 2026)**: Establishes a firm boundary between Trading and Banking books, sets 9% capital charge for forex/equity risk, and details treatment for internal risk transfers and options (Delta-plus/Scenario approaches).";
+          } else if (lowerPrompt.includes("action") || lowerPrompt.includes("suggest") || lowerPrompt.includes("timeline")) {
+             mockOutput = "**Suggested Action Items for Aarohan Bank:**\n\n1. **Policy Update (KYC)**: Integrate new V-CIP geo-tagging and liveness check requirements into Customer Acceptance Policy (Due: Next Board Meeting).\n2. **IT Infrastructure**: Upgrade video verification servers to ensure end-to-end encryption and prevent spoofed IPs (Due: Q3).\n3. **Risk Management**: Recalculate Net Open Position (NOP) for forex to include 9% capital charge and identify structural exemptions (Due: Immediate).";
+          } else if (lowerPrompt.includes("impact") && !lowerPrompt.includes("department") && !lowerPrompt.includes("affected")) {
+             mockOutput = "**Key Compliance Impacts:**\n\n1. **Capital Requirements**: Increased capital charge (9%) on forex and equity positions.\n2. **KYC & Onboarding**: Mandatory integration of liveness checks and geo-tagging for V-CIP.\n3. **Data Localization**: Stricter audit trails and localized servers for video KYC records.\n4. **Account Limitations**: Caps enforced on 'Small Accounts' (e.g. ₹50k balance limit).";
+          } else if (lowerPrompt.includes("affected") || lowerPrompt.includes("department")) {
+             mockOutput = "**Departmental Impact Analysis:**\n\n- **Compliance & Operations**: High Impact. Must implement new V-CIP audit trails and monitor Small Account limits (₹1L credit/₹50k balance).\n- **Risk Management**: High Impact. Must adjust capital calculations for Trading Book reclassifications and apply 9% charge to Equity/Forex NOP.\n- **IT & Cybersecurity**: High Impact. Required to secure V-CIP infrastructure and ensure data localization.";
+          }
         }
         responseText = mockOutput;
       }
@@ -249,8 +308,12 @@ return (
                   <FileText className="w-4 h-4 opacity-80" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-[#0F172A]">RBI KYC Master Direction 2026</h2>
-                  <p className="text-xs text-slate-500 mt-1">Uploaded on 20 Aug 2026 &nbsp;&bull;&nbsp; 42 pages &nbsp;&bull;&nbsp; English</p>
+                  <h2 className="text-lg font-bold text-[#0F172A]">
+                    {currentDoc === "RBI24" ? "RBI Digital Lending Guidelines 2024" : "RBI KYC Master Direction 2026"}
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {currentDoc === "RBI24" ? "Uploaded on 15 Feb 2024 • 28 pages • English" : "Uploaded on 20 Aug 2026 • 42 pages • English"}
+                  </p>
                 </div>
               </div>
 
@@ -621,7 +684,11 @@ return (
         {/* Chat Input */}
         <div className="p-4 bg-white border-t border-slate-100">
           <div className="relative flex items-center">
-            <button className="absolute left-3 text-slate-400 hover:text-slate-600 transition-colors">
+            <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} accept=".pdf" />
+            <button 
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute left-3 text-slate-400 hover:text-slate-600 transition-colors"
+            >
               <Paperclip className="w-4 h-4" />
             </button>
             <input 

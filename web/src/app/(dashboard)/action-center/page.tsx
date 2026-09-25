@@ -23,6 +23,7 @@ export default function ActionCenter() {
   const [selectedAction, setSelectedAction] = useState<Action | null>(null);
   const [actions, setActions] = useState<Action[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("All");
 
   useEffect(() => {
     fetch('/api/actions?t=' + Date.now())
@@ -68,6 +69,29 @@ export default function ActionCenter() {
       toast.error("Failed to update status in database");
     }
   };
+
+  const getTabCount = (tabId: string) => {
+    switch (tabId) {
+      case "Critical": return actions.filter(a => a.priority === 'Critical').length;
+      case "My Actions": return actions.filter(a => a.owner.includes('Priya') || a.owner === actions[0]?.owner).length;
+      case "Overdue": return actions.filter(a => { const d = new Date(a.due); return !isNaN(d.getTime()) && d < new Date() && a.status !== 'Completed'; }).length;
+      case "In Progress": return actions.filter(a => a.status === 'In Progress').length;
+      case "Completed": return actions.filter(a => a.status === 'Completed').length;
+      default: return actions.length;
+    }
+  };
+
+  const filteredActions = actions.filter(a => {
+    if (activeTab === "Critical") return a.priority === 'Critical';
+    if (activeTab === "My Actions") return a.owner.includes('Priya') || a.owner === actions[0]?.owner;
+    if (activeTab === "Overdue") {
+       const d = new Date(a.due);
+       return !isNaN(d.getTime()) && d < new Date() && a.status !== 'Completed';
+    }
+    if (activeTab === "In Progress") return a.status === 'In Progress';
+    if (activeTab === "Completed") return a.status === 'Completed';
+    return true;
+  });
 
   return (
     <>
@@ -117,11 +141,14 @@ export default function ActionCenter() {
         <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000]  ">
           {/* Tabs */}
           <div className="flex items-center gap-6 px-4 border-b border-border overflow-x-auto">
-            {["All (63)", "Critical (14)", "My Actions (8)", "Overdue (9)", "In Progress (28)", "Completed (31)"].map((tab, i) => {
-              const isActive = (i === 0);
+            {["All", "Critical", "My Actions", "Overdue", "In Progress", "Completed"].map((tab) => {
+              const isActive = (activeTab === tab);
               return (
-                <button key={tab} className={cn("px-2 py-4 text-sm font-semibold border-b-2 whitespace-nowrap transition-colors", isActive ? "border-indigo text-indigo" : "border-transparent text-muted-foreground hover:text-foreground")}>
-                  {tab}
+                <button 
+                  key={tab} 
+                  onClick={() => setActiveTab(tab)}
+                  className={cn("px-2 py-4 text-sm font-semibold border-b-2 whitespace-nowrap transition-colors", isActive ? "border-indigo text-indigo" : "border-transparent text-muted-foreground hover:text-foreground")}>
+                  {tab} ({getTabCount(tab)})
                 </button>
               );
             })}
@@ -168,7 +195,7 @@ export default function ActionCenter() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border font-medium">
-                {actions.map((row, i) => (
+                {filteredActions.map((row, i) => (
                   <tr key={i} className="hover:bg-secondary/30 transition-colors cursor-pointer" onClick={() => openActionDetail(row)}>
                     <td className="px-4 py-4" onClick={e => e.stopPropagation()}><input type="checkbox" className="rounded border-border" /></td>
                     <td className="px-4 py-4 font-mono text-xs text-indigo">{row.id}</td>
@@ -213,7 +240,7 @@ export default function ActionCenter() {
 
           {/* Pagination */}
           <div className="p-4 border-t border-border flex flex-col sm:flex-row gap-3 items-center justify-between text-sm text-muted-foreground">
-            <div>Showing {actions.length} action{actions.length !== 1 ? "s" : ""} from RBI KYC Guidelines</div>
+            <div>Showing {filteredActions.length} action{filteredActions.length !== 1 ? "s" : ""} from RBI KYC Guidelines</div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1 border border-border rounded bg-background p-1">
                 <button className="px-2 py-1 text-muted-foreground hover:text-foreground">{"<"}</button>
