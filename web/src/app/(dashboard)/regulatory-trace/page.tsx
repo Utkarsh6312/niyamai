@@ -73,10 +73,10 @@ function TraceContent() {
 
                   <div>
                     <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-2"><ShieldAlert className="w-3 h-3"/> Policy Gap Detected</h4>
-                    {graphData?.nodes.some(n => n.type === "gap") ? (
+                    {graphData?.nodes?.some(n => n.type === "gap") ? (
                       <div className="bg-amber/10 border border-amber/20 p-3 rounded text-sm font-medium text-amber flex flex-col gap-2">
-                          <span>{graphData.nodes.find(n => n.type === "gap")?.data.label}</span>
-                          <span className="text-xs font-normal opacity-80">{graphData.nodes.find(n => n.type === "gap")?.data.sub}</span>
+                          <span>{graphData?.nodes?.find(n => n.type === "gap")?.data.label}</span>
+                          <span className="text-xs font-normal opacity-80">{graphData?.nodes?.find(n => n.type === "gap")?.data.sub}</span>
                       </div>
                     ) : (
                       <div className="text-sm text-muted-foreground italic">No gaps mapped yet.</div>

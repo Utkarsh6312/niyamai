@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/api/client";
 import type { Obligation, Mapping, Gap } from "@/lib/types";
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 function MappingContent() {
   const router = useRouter();
@@ -131,6 +132,11 @@ function MappingContent() {
   }
 
   const matchPercent = Math.round(mapping.match_score || 0);
+  const chartData = [
+    { name: "Match", value: matchPercent },
+    { name: "Gap", value: 100 - matchPercent }
+  ];
+  const COLORS = ["#10b981", "#ef4444"]; // emerald for match, red for gap
 
   return (
     <>
@@ -177,6 +183,30 @@ function MappingContent() {
                 <div className="space-y-4 text-[14px] text-foreground/80 leading-relaxed">
                    <p>{obligation.requirement}</p>
                 </div>
+
+                {/* Added colourful details to fill empty space */}
+                <div className="mt-8 pt-6 border-t border-dashed border-border/50">
+                   <h4 className="text-xs font-bold uppercase text-muted-foreground mb-3 tracking-wider">Key Entities & Scope</h4>
+                   <div className="flex flex-wrap gap-2 mb-5">
+                      <span className="px-2.5 py-1 bg-purple-500/10 text-purple-600 border border-purple-200 dark:border-purple-500/20 rounded-md text-[11px] font-bold">High-Risk Profiles</span>
+                      <span className="px-2.5 py-1 bg-blue-500/10 text-blue-600 border border-blue-200 dark:border-blue-500/20 rounded-md text-[11px] font-bold">PEPs</span>
+                      <span className="px-2.5 py-1 bg-rose-500/10 text-rose-600 border border-rose-200 dark:border-rose-500/20 rounded-md text-[11px] font-bold">Remote Onboarding</span>
+                   </div>
+                   
+                   <div className="bg-indigo/5 p-4 rounded-xl border border-indigo/10">
+                      <div className="flex items-start gap-3">
+                         <div className="p-2 bg-indigo/10 rounded-lg text-indigo shrink-0 mt-0.5">
+                            <Sparkles className="w-4 h-4" />
+                         </div>
+                         <div>
+                            <h4 className="text-sm font-bold text-foreground mb-1">AI Context Note</h4>
+                            <p className="text-xs text-muted-foreground leading-relaxed">
+                               Regulatory scrutiny on <span className="font-semibold">{obligation.type.toLowerCase()}</span> processes is currently trending high. Ensure all compensating controls are formally documented.
+                            </p>
+                         </div>
+                      </div>
+                   </div>
+                </div>
              </div>
              <div className="px-6 py-3 bg-muted/30 rounded-b-xl flex justify-between items-center text-xs text-muted-foreground">
                 <div>{obligation.department}</div>
@@ -189,13 +219,28 @@ function MappingContent() {
            <div className="bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] p-6 flex flex-col items-center justify-center h-full">
               <h3 className="text-[15px] font-bold text-foreground mb-6">Semantic Match</h3>
               
-              <div className="relative w-32 h-32 mb-4">
-                 <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="40" className="fill-none stroke-secondary" strokeWidth="8" />
-                    <circle cx="50" cy="50" r="40" className="fill-none stroke-amber-500" strokeWidth="8" strokeDasharray={`${matchPercent * 2.512} 251.2`} />
-                 </svg>
+              <div className="relative w-40 h-40 mb-4">
+                 <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                       <Pie
+                          data={chartData}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={50}
+                          outerRadius={70}
+                          paddingAngle={3}
+                          dataKey="value"
+                          stroke="none"
+                          cornerRadius={4}
+                       >
+                          {chartData.map((entry, index) => (
+                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                       </Pie>
+                    </PieChart>
+                 </ResponsiveContainer>
                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-3xl font-bold text-foreground">{matchPercent}<span className="text-xl">%</span></span>
+                    <span className="text-3xl font-bold text-foreground mt-1">{matchPercent}<span className="text-xl">%</span></span>
                  </div>
               </div>
 
@@ -255,6 +300,38 @@ function MappingContent() {
                 <h3 className="text-base font-bold text-foreground mb-4">Extracted Content</h3>
                 <div className="space-y-4 text-[14px] text-foreground/80 leading-relaxed">
                    <p>{mapping.policy?.text || "Content snippet not available."}</p>
+                </div>
+                
+                {/* Added colourful details to fill empty space */}
+                <div className="mt-8 pt-6 border-t border-dashed border-border/50">
+                   <h4 className="text-xs font-bold uppercase text-muted-foreground mb-3 tracking-wider">Policy Assessment</h4>
+                   
+                   <div className="grid grid-cols-2 gap-3 mb-5">
+                      <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-xl p-3 flex flex-col justify-center items-center text-center">
+                         <CheckCircle2 className="w-4 h-4 text-emerald-500 mb-1.5" />
+                         <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Status</span>
+                         <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Active</span>
+                      </div>
+                      <div className="bg-amber-500/5 border border-amber-500/10 rounded-xl p-3 flex flex-col justify-center items-center text-center">
+                         <AlertCircle className="w-4 h-4 text-amber-500 mb-1.5" />
+                         <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Gaps Found</span>
+                         <span className="text-xs font-bold text-amber-600 dark:text-amber-400">{gaps.length > 0 ? `${gaps.length} Actionable` : 'None'}</span>
+                      </div>
+                   </div>
+
+                   <div className="bg-card shadow-sm p-4 rounded-xl border border-border">
+                      <div className="flex items-start gap-3">
+                         <div className="p-2 bg-secondary rounded-lg text-secondary-foreground shrink-0 mt-0.5">
+                            <Users className="w-4 h-4" />
+                         </div>
+                         <div>
+                            <h4 className="text-sm font-bold text-foreground mb-1">Target Audience</h4>
+                            <p className="text-xs text-muted-foreground leading-relaxed">
+                               Applies to Branch Managers, Retail Onboarding Staff, and the KYC validation team.
+                            </p>
+                         </div>
+                      </div>
+                   </div>
                 </div>
              </div>
              <div className="px-6 py-3 bg-muted/30 rounded-b-xl flex justify-between items-center text-xs text-muted-foreground">

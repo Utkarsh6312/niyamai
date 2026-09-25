@@ -30,7 +30,7 @@ const roleDistribution = [
 ];
 
 export default function Users() {
-  const [selectedUser] = useState(users[0]);
+  const [selectedUser, setSelectedUser] = useState(users[0]);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("Viewer");
@@ -191,7 +191,7 @@ export default function Users() {
                 </thead>
                 <tbody className="divide-y divide-border">
                   {users.map((user, i) => (
-                    <tr key={i} className={`hover:bg-secondary/10 transition-colors cursor-pointer ${i === 0 ? 'bg-indigo/5' : ''}`}>
+                    <tr key={i} onClick={() => setSelectedUser(user)} className={`hover:bg-secondary/10 transition-colors cursor-pointer ${user.email === selectedUser.email ? 'bg-indigo/5' : ''}`}>
                       <td className="pl-4 pr-2 py-3"><input type="checkbox" className="rounded border-border" /></td>
                       <td className="px-3 py-3">
                         <div className="flex items-center gap-2.5">

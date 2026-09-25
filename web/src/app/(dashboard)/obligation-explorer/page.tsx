@@ -186,8 +186,8 @@ export default function ObligationExplorer() {
       {/* Main Content */}
       <div className="flex gap-6 flex-1 min-h-0">
         
-        {/* Left: Table Area */}
-        <div className={`flex-1 flex flex-col min-w-0 space-y-4 ${selectedObId ? "hidden lg:flex" : ""}`}>
+        {/* Table Area */}
+        <div className="flex-1 flex flex-col min-w-0 space-y-4">
           
           {/* Filters */}
           <div className="flex flex-wrap items-center gap-3">
@@ -236,7 +236,7 @@ export default function ObligationExplorer() {
                       className={`cursor-pointer transition-colors ${selectedObId === row.id ? "bg-indigo/5" : "hover:bg-secondary/30"}`}
                     >
                       <td className="px-3 py-3 font-mono text-xs">{row.obligation_code}</td>
-                      <td className="px-3 py-3 font-medium whitespace-normal line-clamp-2 min-w-[250px]">{row.requirement}</td>
+                      <td className="px-3 py-3 font-medium whitespace-normal min-w-[250px]">{row.requirement}</td>
                       <td className="px-3 py-3 text-xs text-muted-foreground whitespace-normal min-w-[150px]">{row.regulation_title}</td>
                       <td className="px-3 py-3 text-xs">{row.department}</td>
                       <td className="px-3 py-3"><RiskBadge level={row.impact} /></td>
@@ -253,108 +253,120 @@ export default function ObligationExplorer() {
           </div>
         </div>
 
-        {/* Right: Detail View */}
-        {selectedOb && (
-          <div className="w-full lg:w-[450px] bg-card border-[3px] border-black rounded-none shadow-[5px_5px_0_0_#000000] flex flex-col overflow-hidden shrink-0">
-            {/* Header */}
-            <div className="p-5 border-b border-border bg-secondary/10 relative">
-              <button onClick={() => setSelectedObId("")} className="absolute top-5 right-5 text-muted-foreground hover:text-foreground">
-                <X className="w-4 h-4" />
-              </button>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="bg-background border border-border px-2 py-0.5 rounded text-[10px] font-bold text-muted-foreground uppercase">{selectedOb.obligation_code}</span>
-                <StatusBadge status={selectedOb.status} />
-                <RiskBadge level={selectedOb.impact} />
-              </div>
-              <h2 className="font-serif text-lg font-bold leading-tight mb-2 pr-6">
-                {selectedOb.requirement}
-              </h2>
-            </div>
+      </div>
 
+      {/* Detail Panel - fixed right side panel */}
+      {selectedOb && (
+        <>
+          {/* Backdrop */}
+          <div className="fixed inset-0 z-40 bg-black/10 backdrop-blur-[1px]" onClick={() => setSelectedObId("")} />
+
+          {/* Panel */}
+          <div className="fixed top-0 right-0 z-50 h-full w-full sm:w-[500px] max-w-full bg-card border-l border-border shadow-xl flex flex-col">
+            
             {/* Content Scrollable */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-6">
-              
-              {/* Context */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Department</p>
-                  <p className="font-medium flex items-center gap-1.5"><Building className="w-3.5 h-3.5 text-muted-foreground" /> {selectedOb.department}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">Type</p>
-                  <p className="font-medium">{selectedOb.type}</p>
-                </div>
-                <div className="col-span-2">
-                  <p className="text-xs text-muted-foreground mb-1">Source Regulation</p>
-                  <Link href={`/regulatory-feed`} className="font-medium text-indigo flex items-center gap-1.5 hover:underline">
-                    <FileText className="w-3.5 h-3.5" /> {selectedOb.regulation_title}
-                  </Link>
-                </div>
-                {selectedOb.clause_no && (
-                  <div className="col-span-2">
-                    <p className="text-xs text-muted-foreground mb-1">Clause Number</p>
-                    <p className="font-medium">Clause {selectedOb.clause_no}</p>
+            <div className="flex-1 overflow-y-auto">
+              <div className="p-6 pb-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <span className="bg-secondary/50 border border-border px-2.5 py-1 rounded-md text-xs font-bold text-muted-foreground uppercase">{selectedOb.obligation_code || selectedOb.id}</span>
+                    <span className="text-indigo text-sm font-semibold">{selectedOb.status}</span>
+                    <span className="text-red text-sm font-semibold uppercase">{selectedOb.impact}</span>
                   </div>
-                )}
-                {selectedOb.deadline && (
-                   <div className="col-span-2">
-                     <p className="text-xs text-muted-foreground mb-1">Deadline</p>
-                     <p className="font-medium flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-orange-500" /> {selectedOb.deadline}</p>
-                   </div>
-                )}
+                  <button onClick={() => setSelectedObId("")} className="p-1 rounded hover:bg-secondary transition-colors">
+                    <X className="w-5 h-5 text-muted-foreground" />
+                  </button>
+                </div>
+                <h2 className="font-serif text-[22px] font-bold leading-snug text-foreground">
+                  {selectedOb.requirement}
+                </h2>
               </div>
 
-              {/* Policy Mapping Section */}
-              <div className="border-t border-border pt-5">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold text-sm">Policy Mapping</h3>
-                  <Link href={`/policy-mapping?obligationId=${selectedOb.id}`} className="text-indigo text-xs font-medium hover:underline flex items-center gap-1">
-                    Manage Mapping <ChevronRight className="w-3 h-3" />
-                  </Link>
-                </div>
+              <div className="border-t border-border mt-2" />
+
+              <div className="p-6 space-y-6">
                 
-                {selectedOb.status === "Not Started" ? (
-                  <div className="bg-amber-50 border border-amber-200 rounded p-4 text-center">
-                    <AlertTriangle className="w-6 h-6 text-amber-500 mx-auto mb-2" />
-                    <p className="text-sm font-medium text-amber-800">Unmapped Obligation</p>
-                    <p className="text-xs text-amber-700 mt-1">This obligation has not been mapped to any internal policy yet.</p>
-                    <Link href={`/policy-mapping?obligationId=${selectedOb.id}`} className="mt-3 inline-block bg-amber-500 text-white text-xs font-bold px-3 py-1.5 rounded hover:bg-amber-600 transition-colors">Start Mapping</Link>
+                <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1.5">Department</p>
+                    <p className="font-medium text-[15px] flex items-center gap-1.5"><Building className="w-4 h-4 text-muted-foreground" /> {selectedOb.department}</p>
                   </div>
-                ) : (
-                  <div className="bg-green-50 border border-green-200 rounded p-4">
-                    <div className="flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-green-800 mb-1">Mapped successfully</p>
-                        <p className="text-xs text-green-700 mb-2">Connected to internal policies via AI mapping.</p>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1.5">Type</p>
+                    <p className="font-medium text-[15px]">{selectedOb.type}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-sm text-muted-foreground mb-1.5">Source Regulation</p>
+                    <Link href={`/regulatory-feed`} className="font-medium text-indigo text-[15px] flex items-center gap-1.5 hover:underline">
+                      <FileText className="w-4 h-4" /> {selectedOb.regulation_title}
+                    </Link>
+                  </div>
+                  {selectedOb.clause_no && (
+                    <div className="col-span-2">
+                      <p className="text-sm text-muted-foreground mb-1.5">Clause Number</p>
+                      <p className="font-medium text-[15px]">{selectedOb.clause_no}</p>
+                    </div>
+                  )}
+                  {selectedOb.deadline && (
+                     <div className="col-span-2">
+                       <p className="text-sm text-muted-foreground mb-1.5">Deadline</p>
+                       <p className="font-medium text-[15px] flex items-center gap-1.5"><Clock className="w-4 h-4 text-orange-500" /> {selectedOb.deadline}</p>
+                     </div>
+                  )}
+                </div>
+
+                {/* Policy Mapping Section */}
+                <div className="border-t border-border pt-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-bold text-[15px]">Policy Mapping</h3>
+                    <Link href={`/policy-mapping?obligationId=${selectedOb.id}`} className="text-indigo text-xs font-semibold hover:underline flex items-center gap-1">
+                      Manage Mapping <ChevronRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                  
+                  {selectedOb.status === "Not Started" ? (
+                    <div className="bg-amber-50 border border-amber-200 rounded-md p-4 text-center">
+                      <AlertTriangle className="w-6 h-6 text-amber-500 mx-auto mb-2" />
+                      <p className="text-sm font-medium text-amber-800">Unmapped Obligation</p>
+                      <p className="text-xs text-amber-700 mt-1">This obligation has not been mapped to any internal policy yet.</p>
+                      <Link href={`/policy-mapping?obligationId=${selectedOb.id}`} className="mt-3 inline-block bg-amber-500 text-white text-xs font-bold px-3 py-1.5 rounded hover:bg-amber-600 transition-colors">Start Mapping</Link>
+                    </div>
+                  ) : (
+                    <div className="bg-green-50 border border-green-200 rounded-md p-4">
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium text-green-800 mb-1">Mapped successfully</p>
+                          <p className="text-xs text-green-700 mb-2">Connected to internal policies via AI mapping.</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
 
-              {/* Action Trace Section */}
-              <div className="border-t border-border pt-5">
-                <h3 className="font-bold text-sm mb-4">Provenance &amp; Actions</h3>
-                <div className="space-y-3">
-                   <Link href={`/regulatory-trace?obligationId=${selectedOb.id}`} className="flex items-center justify-between p-3 border border-border rounded hover:bg-secondary/30 transition-colors">
-                     <div className="flex items-center gap-3">
-                       <div className="w-8 h-8 rounded bg-indigo/10 flex items-center justify-center shrink-0">
-                         <LinkIcon className="w-4 h-4 text-indigo" />
+                {/* Action Trace Section */}
+                <div className="border-t border-border pt-6">
+                  <h3 className="font-bold text-[15px] mb-4">Provenance &amp; Actions</h3>
+                  <div className="space-y-3">
+                     <Link href={`/regulatory-trace?obligationId=${selectedOb.id}`} className="flex items-center justify-between p-3 border border-border rounded-md hover:bg-secondary/30 transition-colors">
+                       <div className="flex items-center gap-3">
+                         <div className="w-8 h-8 rounded bg-indigo/10 flex items-center justify-center shrink-0">
+                           <LinkIcon className="w-4 h-4 text-indigo" />
+                         </div>
+                         <div>
+                           <p className="text-sm font-medium">View Full Trace Graph</p>
+                           <p className="text-xs text-muted-foreground">See the end-to-end provenance</p>
+                         </div>
                        </div>
-                       <div>
-                         <p className="text-sm font-medium">View Full Trace Graph</p>
-                         <p className="text-xs text-muted-foreground">See the end-to-end provenance</p>
-                       </div>
-                     </div>
-                     <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                   </Link>
+                       <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                     </Link>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </>
+      )}
 
       {/* Custom View Builder Modal */}
       {isViewOpen && (
