@@ -10,7 +10,7 @@ import {
 import Link from "next/link";
 import { toast } from "sonner";
 import { RiskBadge } from "@/components/ui/badges";
-import { rbiKycAnalysisFindings, rbiSummaryStats, rbi24AnalysisFindings, rbi24SummaryStats, RbiFinding } from "@/lib/data/rbi-analysis-data";
+import { ALL_SCENARIOS, RbiFinding } from "@/lib/data/rbi-analysis-data";
 
 // ── AI pipeline stages with detailed real-looking log lines ──────────────────
 const PIPELINE_STAGES = [
@@ -173,15 +173,16 @@ export default function ImpactAnalysis() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
 
+  const [uploadIndex, setUploadIndex] = useState(0);
   const [search, setSearch] = useState("");
   const [filterDept, setFilterDept] = useState("All");
   const [filterImpact, setFilterImpact] = useState("All");
   const [filterStatus, setFilterStatus] = useState("All");
   const [isSummarized, setIsSummarized] = useState(false);
 
-  const isRbi24 = uploadedFileName.includes("24");
-  const currentFindings = isRbi24 ? rbi24AnalysisFindings : rbiKycAnalysisFindings;
-  const currentStats = isRbi24 ? rbi24SummaryStats : rbiSummaryStats;
+  const activeScenario = ALL_SCENARIOS[uploadIndex] || ALL_SCENARIOS[0];
+  const currentFindings = activeScenario.findings;
+  const currentStats = activeScenario.stats;
 
   useEffect(() => {
     // Load persisted state
@@ -190,6 +191,8 @@ export default function ImpactAnalysis() {
       if (stored === "true") {
         setHasAnalyzed(true);
         setUploadedFileName(localStorage.getItem("niyamai_file_name") || "RBI_KYC_Master_Direction_2025.pdf");
+        const count = parseInt(localStorage.getItem("niyamai_upload_counter") || "1");
+        setUploadIndex((count - 1) % 5);
       }
     }
 
@@ -214,6 +217,12 @@ export default function ImpactAnalysis() {
   const handleSimulateUpload = (fileOrName?: File | string) => {
     const fileName = fileOrName instanceof File ? fileOrName.name : (fileOrName || "RBI_KYC_Directions_2025.pdf");
     setUploadedFileName(fileName);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("niyamai_file_name", fileName);
+      localStorage.setItem("niyamai_has_analyzed", "true");
+      const currentCount = parseInt(localStorage.getItem("niyamai_upload_counter") || "0");
+      localStorage.setItem("niyamai_upload_counter", (currentCount + 1).toString());
+    }
     setAnalyzing(true);
     setPipelineStep(0);
     setLogLines([`[${new Date().toLocaleTimeString()}] NiyamAI v2.4 — Analysis started`, `[${new Date().toLocaleTimeString()}] Target document: ${fileName}`]);
@@ -242,13 +251,39 @@ export default function ImpactAnalysis() {
           localStorage.setItem("niyamai_has_analyzed", "true");
           localStorage.setItem("niyamai_file_name", fileName);
 
-          const _is24 = fileName.includes("24");
-          const _findings = _is24 ? rbi24AnalysisFindings : rbiKycAnalysisFindings;
-          const _stats = _is24 ? rbi24SummaryStats : rbiSummaryStats;
+          const countStr = localStorage.getItem("niyamai_upload_counter") || "1";
+          const count = parseInt(countStr);
+          const newIdx = (count - 1) % 5;
+          setUploadIndex(newIdx);
+          const _findings = ALL_SCENARIOS[newIdx].findings;
+          const _stats = ALL_SCENARIOS[newIdx].stats;
 
           toast.success(`✅ Analysis of "${fileName}" complete!`, {
             description: `${_stats.totalMaterialChanges} amendments detected · ${_findings.length} obligations extracted · ${_findings.length} remediation actions created.`
           });
+
+          const allPossibleFindings = ALL_SCENARIOS.flatMap(s => s.findings);
+          const extraFindings = [...allPossibleFindings].sort(() => 0.5 - Math.random()).slice(0, 15);
+          for (const extra of extraFindings) {
+            const randomId = `ACT-2024-${Math.floor(Math.random() * 900) + 100}`;
+            try {
+              await fetch("/api/actions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  id: randomId,
+                  action: extra.recommendedAction.title,
+                  regulation: `${extra.sourceClause} (Page ${extra.sourcePage})`,
+                  department: extra.recommendedAction.department,
+                  ownerInitials: extra.recommendedAction.ownerInitials,
+                  owner: extra.recommendedAction.owner,
+                  priority: extra.recommendedAction.priority,
+                  due: extra.recommendedAction.dueDate,
+                  status: Math.random() > 0.6 ? "In Progress" : "Pending"
+                })
+              });
+            } catch {}
+          }
 
           for (const finding of _findings) {
             try {
@@ -331,7 +366,7 @@ export default function ImpactAnalysis() {
     }
   };
 
-  const filteredFindings = useMemo(() => rbiKycAnalysisFindings.filter(f => {
+  const filteredFindings = useMemo(() => currentFindings.filter(f => {
     if (filterDept !== "All" && !f.departments.includes(filterDept)) return false;
     if (filterImpact !== "All" && f.riskLevel !== filterImpact) return false;
     if (filterStatus !== "All" && f.matchStatus !== filterStatus) return false;
@@ -340,7 +375,7 @@ export default function ImpactAnalysis() {
       if (!f.obligationTitle.toLowerCase().includes(q) && !f.sourceClause.toLowerCase().includes(q) && !f.affectedPolicy.toLowerCase().includes(q) && !f.gapDetails.toLowerCase().includes(q)) return false;
     }
     return true;
-  }), [search, filterDept, filterImpact, filterStatus]);
+  }), [search, filterDept, filterImpact, filterStatus, currentFindings]);
 
   const handleReset = async () => {
     setIsResetting(true);
@@ -839,6 +874,12 @@ export default function ImpactAnalysis() {
                         >
                           <Eye className="w-3.5 h-3.5 text-indigo" /> View Evidence
                         </button>
+                        <Link
+                          href="/compliance-issues"
+                          className="flex items-center gap-1 px-3 py-1.5 bg-background border-2 border-black text-xs font-bold hover:bg-amber-50 transition-colors shadow-[2px_2px_0_0_#000000]"
+                        >
+                          <ShieldAlert className="w-3.5 h-3.5 text-amber-600" /> Compliance Issues
+                        </Link>
                         <button
                           onClick={() => handleCreateAction(finding)}
                           disabled={isActionCreated || isCreating}

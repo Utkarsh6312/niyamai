@@ -24,6 +24,9 @@ export default function AIAssistant() {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (typeof window !== "undefined") {
+        localStorage.setItem("niyamai_file_name", file.name);
+      }
       if (file.name.includes("24")) {
         setCurrentDoc("RBI24");
         setMessages(prev => [...prev, {

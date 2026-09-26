@@ -420,3 +420,66 @@ export const rbi24SummaryStats = {
     "Customer Experience"
   ]
 };
+
+// --- GENERATED ROTATION DATA (3 MORE SCENARIOS) ---
+export const scenario3Findings: RbiFinding[] = rbiKycAnalysisFindings.map(f => ({
+  ...f,
+  id: f.id + "-3",
+  obligationTitle: f.obligationTitle.replace("KYC", "AML").replace("V-CIP", "Transaction Monitoring"),
+  obligationCode: f.obligationCode.replace("KYC", "AML"),
+  riskLevel: f.riskLevel === "Critical" ? "High" : "Medium",
+  departments: ["Fraud Operations", "Compliance"]
+}));
+export const scenario3Stats = {
+  ...rbiSummaryStats,
+  documentTitle: "RBI Transaction Monitoring and AML Guidelines, 2026",
+  totalMaterialChanges: 22,
+  obligationsExtracted: 8,
+  criticalGaps: 0,
+  highGaps: 4,
+  affectedDepartments: ["Fraud Operations", "Compliance", "IT Systems"]
+};
+
+export const scenario4Findings: RbiFinding[] = rbi24AnalysisFindings.map(f => ({
+  ...f,
+  id: f.id + "-4",
+  obligationTitle: f.obligationTitle.replace("Digital Lending", "Mobile Banking Security"),
+  obligationCode: f.obligationCode.replace("DLA", "MOB"),
+  riskLevel: "Critical",
+  departments: ["Information Security", "Digital Channels"]
+}));
+export const scenario4Stats = {
+  ...rbi24SummaryStats,
+  documentTitle: "RBI Master Direction - Mobile Banking Authentication",
+  totalMaterialChanges: 11,
+  obligationsExtracted: 3,
+  criticalGaps: 3,
+  highGaps: 0,
+  affectedDepartments: ["Information Security", "Digital Channels", "Risk Management"]
+};
+
+export const scenario5Findings: RbiFinding[] = rbiKycAnalysisFindings.map(f => ({
+  ...f,
+  id: f.id + "-5",
+  obligationTitle: f.obligationTitle.replace("KYC", "Dormant Accounts").replace("V-CIP", "Reactivation"),
+  obligationCode: f.obligationCode.replace("KYC", "DORM"),
+  riskLevel: "Medium",
+  departments: ["Branch Operations", "Customer Support"]
+}));
+export const scenario5Stats = {
+  ...rbiSummaryStats,
+  documentTitle: "RBI Guidelines on Dormant Account Management",
+  totalMaterialChanges: 7,
+  obligationsExtracted: 4,
+  criticalGaps: 1,
+  highGaps: 1,
+  affectedDepartments: ["Branch Operations", "Customer Support", "Audit"]
+};
+
+export const ALL_SCENARIOS = [
+  { findings: rbiKycAnalysisFindings, stats: rbiSummaryStats },
+  { findings: rbi24AnalysisFindings, stats: rbi24SummaryStats },
+  { findings: scenario3Findings, stats: scenario3Stats },
+  { findings: scenario4Findings, stats: scenario4Stats },
+  { findings: scenario5Findings, stats: scenario5Stats },
+];
